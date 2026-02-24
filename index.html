@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NeuroPendulum — Beta v0.9</title>
+<meta name="theme-color" content="#06080E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NeuroPendulum">
+<meta name="application-name" content="NeuroPendulum">
+<meta name="description" content="Autoreguliertes Kraft-Framework — 60 Sekunden Check-in → klare Trainingsentscheidung.">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTmV1cm9QZW5kdWx1bSIsInNob3J0X25hbWUiOiJOZXVyb1AiLCJkZXNjcmlwdGlvbiI6IkF1dG9yZWd1bGllcnRlcyBLcmFmdC1GcmFtZXdvcmsiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzA2MDgwRSIsInRoZW1lX2NvbG9yIjoiIzA2MDgwRSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBeE1qZ2dNVEk0SWo0OGNtVmpkQ0IzYVdSMGFEMGlNVEk0SWlCb1pXbG5hSFE5SWpFeU9DSWdjbmc5SWpJMElpQm1hV3hzUFNJak1EWXdPREJGSWk4K1BHTnBjbU5zWlNCamVEMGlOalFpSUdONVBTSTFOaUlnY2owaU16QWlJSE4wY205clpUMGlJelJFUVROR1JpSWdjM1J5YjJ0bExYZHBaSFJvUFNJeUlpQm1hV3hzUFNKdWIyNWxJaTgrUEdOcGNtTnNaU0JqZUQwaU5qUWlJR041UFNJMU5pSWdjajBpTVRRaUlITjBjbTlyWlQwaUkwVTROVGt3UXlJZ2MzUnliMnRsTFhkcFpIUm9QU0l5SWlCbWFXeHNQU0p1YjI1bElpOCtQR3hwYm1VZ2VESTFJQ0o1TVQwaU56SWlJSGd5UFNJMU5DSWdlVEk5SWpreElpQnpkSEp2YTJVOUlpTkZPRFU1TUVNaUlITjBjbTlyWlMxM2FXUjBhRDBpTWlJdlBqeDBaWGgwSUhnOUlqWTBJaUI1UFNJNU9DSWdkR1Y0ZEMxaGJtTm9iM0k5SW0xcFpHUnNaU0lnWm05dWRDMW1ZVzFwYkhrOUlpZENaV0poY3lCT1pYVmxKeXdnYzJGdWN5MXpaWEpwWmlJZ1ptOXVkQzF6YVhwbFBTSXlNQ0lnWm1sc2JEMGlJMFZFUlVWR01pSStUbEE4TDNSbGVIUStQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #06080E;
+    --bg-card: #0C1018;
+    --bg-card-hover: #10141E;
+    --bg-input: #131923;
+    --bg-elevated: #181E2C;
+    --border: #1A2035;
+    --border-light: #232B42;
+    --border-focus: #E8590C;
+    --text-primary: #EDEEF2;
+    --text-secondary: #8B90A5;
+    --text-muted: #454B62;
+    --orange: #E8590C;
+    --orange-light: #FF7A33;
+    --orange-glow: rgba(232, 89, 12, 0.12);
+    --orange-glow-strong: rgba(232, 89, 12, 0.25);
+    --blue: #4DA3FF;
+    --blue-dim: rgba(77, 163, 255, 0.10);
+    --green: #22C55E;
+    --green-bg: rgba(34, 197, 94, 0.10);
+    --green-glow: rgba(34, 197, 94, 0.25);
+    --yellow: #EAB308;
+    --yellow-bg: rgba(234, 179, 8, 0.10);
+    --yellow-glow: rgba(234, 179, 8, 0.25);
+    --red: #EF4444;
+    --red-bg: rgba(239, 68, 68, 0.10);
+    --red-glow: rgba(239, 68, 68, 0.25);
+    --purple: #A78BFA;
+    --purple-bg: rgba(167, 139, 250, 0.10);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.3);
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh; min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    padding-bottom: 72px;
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 10px 16px;
+    background: rgba(6, 8, 14, 0.92);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-brand { display: flex; align-items: center; gap: 10px; }
+  .header-logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--orange) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: white;
+    box-shadow: 0 0 16px var(--orange-glow);
+  }
+  .header-title { font-family: 'Bebas Neue', sans-serif; font-size: 21px; letter-spacing: 0.5px; }
+  .header-title span:first-child { color: var(--blue); }
+  .header-title span:last-child { color: var(--orange); }
+  .header-badge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--text-muted); border: 1px solid var(--border);
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(6, 8, 14, 0.95);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid var(--border);
+    display: flex; padding: 6px 4px 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 2px; padding: 5px 2px; background: none; border: none;
+    color: var(--text-muted); font-family: 'IBM Plex Mono', monospace;
+    font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase;
+    cursor: pointer; transition: color var(--transition); position: relative;
+  }
+  .nav-btn.active { color: var(--orange); }
+  .nav-btn.active::before {
+    content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 2px; background: var(--orange); border-radius: 1px;
+  }
+  .nav-icon { font-size: 18px; line-height: 1; }
+
+  /* MAIN */
+  .main { padding-top: 58px; }
+  .tab-content { display: none; padding: 16px; min-height: calc(100dvh - 130px); }
+  .tab-content.active { display: block; }
+  .tab-content.active .card { animation: cardIn 0.35s ease both; }
+  .tab-content.active .card:nth-child(1) { animation-delay: 0s; }
+  .tab-content.active .card:nth-child(2) { animation-delay: 0.06s; }
+  .tab-content.active .card:nth-child(3) { animation-delay: 0.12s; }
+  .tab-content.active .card:nth-child(4) { animation-delay: 0.18s; }
+  .tab-content.active .card:nth-child(5) { animation-delay: 0.22s; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-muted); margin-bottom: 16px;
+  }
+  .card-divider { height: 1px; background: var(--border); margin: 16px -20px; width: calc(100% + 40px); }
+
+  /* DASHBOARD */
+  .status-display { text-align: center; padding: 24px 16px; }
+  .status-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 2.5px; color: var(--text-muted); margin-bottom: 20px; }
+  .status-badge {
+    display: inline-block; padding: 14px 36px; border-radius: var(--radius-sm);
+    font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 2px;
+    transition: all 0.4s ease;
+  }
+  .status-badge.green { background: var(--green-bg); border: 2px solid var(--green); color: var(--green); box-shadow: 0 0 30px var(--green-glow); }
+  .status-badge.yellow { background: var(--yellow-bg); border: 2px solid var(--yellow); color: var(--yellow); box-shadow: 0 0 30px var(--yellow-glow); }
+  .status-badge.red { background: var(--red-bg); border: 2px solid var(--red); color: var(--red); box-shadow: 0 0 30px var(--red-glow); animation: pulseRed 2s ease infinite; }
+  @keyframes pulseRed { 0%,100% { box-shadow: 0 0 30px var(--red-glow); } 50% { box-shadow: 0 0 50px rgba(239,68,68,0.35); } }
+  .status-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 12px; line-height: 1.5; }
+  .lift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .lift-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 12px; text-align: center; }
+  .lift-name { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 6px; }
+  .lift-weight { font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: var(--orange); line-height: 1; }
+  .lift-unit { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intensity-meter { margin-top: 20px; }
+  .meter-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .meter-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .meter-value { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; color: var(--orange); }
+  .meter-track { height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
+  .quick-action {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 16px; padding: 14px;
+    background: var(--orange-glow); border: 1px solid rgba(232,89,12,0.2);
+    border-radius: var(--radius-sm); cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--orange);
+    transition: all var(--transition);
+  }
+  .quick-action:active { transform: scale(0.97); background: var(--orange-glow-strong); }
+  .framework-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fw-item { padding: 12px; background: var(--bg-input); border-radius: var(--radius-xs); border: 1px solid var(--border); }
+  .fw-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .fw-value { font-size: 13px; color: var(--text-primary); margin-top: 3px; font-weight: 500; }
+
+  /* SETUP */
+  .section-header { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; }
+  .section-header.orange { color: var(--orange); }
+  .section-header.blue { color: var(--blue); }
+  .section-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 16px; }
+  .input-row {
+    display: grid; grid-template-columns: 1fr 72px 44px 64px;
+    gap: 6px; align-items: center; padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .input-row:last-child { border-bottom: none; }
+  .input-label { font-size: 14px; font-weight: 500; }
+  .input-field {
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-xs); padding: 9px 6px;
+    color: var(--blue); font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    text-align: center; width: 100%; outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .input-field:focus { border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange-glow); }
+  .tm-display { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-muted); text-align: center; }
+  .tm-value { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--orange); text-align: center; font-weight: 600; }
+  .save-btn {
+    width: 100%; padding: 14px; background: var(--orange); border: none;
+    border-radius: var(--radius-sm); color: white;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; margin-top: 16px;
+    transition: transform 0.1s, box-shadow var(--transition);
+    box-shadow: 0 4px 16px var(--orange-glow);
+  }
+  .save-btn:active { transform: scale(0.97); }
+  .save-msg { text-align: center; font-size: 12px; margin-top: 10px; font-family: 'IBM Plex Mono', monospace; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+  .save-msg.show { opacity: 1; }
+  .progression-info { font-size: 13px; color: var(--text-secondary); line-height: 2; }
+  .progression-info .val { color: var(--orange); font-weight: 600; }
+  .add-row { display: grid; grid-template-columns: 1fr 72px 40px; gap: 6px; align-items: center; margin-top: 12px; }
+  .add-input { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 10px; color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 13px; outline: none; transition: border-color var(--transition); }
+  .add-input:focus { border-color: var(--orange); }
+  .add-input::placeholder { color: var(--text-muted); }
+  .add-input-rm { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 10px 6px; color: var(--blue); font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-align: center; outline: none; transition: border-color var(--transition); }
+  .add-input-rm:focus { border-color: var(--orange); }
+  .add-btn { width: 40px; height: 40px; background: var(--orange); border: none; border-radius: var(--radius-xs); color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .add-btn:active { transform: scale(0.9); }
+  .custom-exercise { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-top: 6px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); }
+  .custom-exercise-info { display: flex; flex-direction: column; gap: 2px; }
+  .custom-exercise-name { font-size: 13px; font-weight: 500; }
+  .custom-exercise-detail { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .custom-exercise-rm { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--blue); font-weight: 600; }
+  .custom-exercise-del { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 4px 8px; }
+  .custom-day-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.5px; margin-left: 6px; }
+  .custom-day-tag.d2 { background: var(--blue-dim); color: var(--blue); }
+  .custom-day-tag.d3 { background: var(--orange-glow); color: var(--orange); }
+  .custom-day-tag.d4 { background: var(--green-bg); color: var(--green); }
+  .custom-empty { text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* CHECK-IN */
+  .checkin-hero { text-align: center; margin-bottom: 24px; }
+  .checkin-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1px; }
+  .checkin-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .checkin-timer { display: inline-flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--orange); margin-top: 10px; padding: 4px 12px; background: var(--orange-glow); border-radius: 20px; }
+  .wd-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .wd-group label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; display: block; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .wd-select { width: 100%; padding: 11px 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); color: var(--blue); font-family: 'IBM Plex Mono', monospace; font-size: 12px; outline: none; -webkit-appearance: none; }
+  .ci-field { margin-bottom: 22px; }
+  .ci-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .ci-label-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+  .ci-hint { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 0.3px; }
+  .ci-input { width: 100%; padding: 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--blue); font-family: 'IBM Plex Mono', monospace; font-size: 20px; text-align: center; outline: none; transition: border-color var(--transition), box-shadow var(--transition); }
+  .ci-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-glow); }
+  .slider-wrap { position: relative; padding: 0 4px; }
+  .slider-val { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--blue); text-align: center; line-height: 1; margin-bottom: 12px; transition: color 0.3s; }
+  .slider-val.warn { color: var(--yellow); }
+  .slider-val.danger { color: var(--red); }
+  input[type="range"] { -webkit-appearance: none; width: 100%; height: 8px; background: var(--bg-elevated); border-radius: 4px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--orange); border-radius: 50%; cursor: pointer; box-shadow: 0 0 14px var(--orange-glow-strong); }
+  .slider-labels { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); margin-top: 6px; }
+  .ci-select { display: grid; gap: 6px; }
+  .ci-select.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .sel-btn { padding: 12px 4px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 16px; cursor: pointer; text-align: center; transition: all 0.15s; }
+  .sel-btn.active { background: var(--orange-glow); border-color: var(--orange); color: var(--orange); font-weight: 600; box-shadow: 0 0 12px var(--orange-glow); }
+  .sel-hint { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 6px; }
+  .run-btn { width: 100%; padding: 18px; margin-top: 12px; background: linear-gradient(135deg, var(--orange), #C94A08); border: none; border-radius: var(--radius-sm); color: white; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; cursor: pointer; box-shadow: 0 6px 24px var(--orange-glow-strong); }
+  .run-btn:active { transform: scale(0.97); }
+
+  /* RESULT */
+  .result-card { display: none; margin-top: 16px; }
+  .result-card.show { display: block; animation: resultIn 0.4s cubic-bezier(0.2,0.8,0.2,1) both; }
+  @keyframes resultIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .result-status { text-align: center; padding: 20px 16px; }
+  .result-badge { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 2px; padding: 14px 28px; border-radius: var(--radius-sm); display: inline-block; }
+  .result-int { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-secondary); margin-top: 14px; }
+  .result-int strong { color: var(--orange); font-size: 20px; }
+  .res-lift-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .res-lift-row:last-child { border-bottom: none; }
+  .res-lift-name { font-size: 14px; color: var(--text-secondary); }
+  .res-lift-weight { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--orange); }
+  .adj-box { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-muted); margin-top: 14px; padding: 14px; background: var(--bg-input); border-radius: var(--radius-xs); line-height: 1.9; }
+  .adj-row { display: flex; justify-content: space-between; }
+  .adj-neg { color: var(--red); }
+  .adj-zero { color: var(--text-muted); }
+  .adj-total { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); color: var(--text-secondary); }
+  .adj-total-val { color: var(--orange); font-weight: 600; }
+  .decision-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .decision-btn { padding: 13px; border-radius: var(--radius-sm); border: 1px solid; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+  .decision-btn.accept { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .decision-btn.override { background: var(--bg-input); border-color: var(--border-light); color: var(--text-secondary); }
+  .decision-msg { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--green); margin-top: 10px; opacity: 0; transition: opacity 0.3s; }
+  .decision-msg.show { opacity: 1; }
+  .myo-alert { margin-top: 14px; padding: 12px 14px; background: var(--yellow-bg); border: 1px solid rgba(234,179,8,0.3); border-radius: var(--radius-xs); font-size: 12px; color: var(--yellow); display: none; line-height: 1.5; }
+  .myo-alert.show { display: block; }
+  .stop-regel-box { margin-top: 12px; padding: 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); display: none; }
+  .stop-regel-box.show { display: block; }
+  .stop-regel-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--orange); margin-bottom: 10px; }
+  .stop-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stop-continue { padding: 10px; background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); border-radius: var(--radius-xs); }
+  .stop-halt { padding: 10px; background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-xs); }
+  .stop-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stop-continue .stop-col-title { color: var(--green); }
+  .stop-halt .stop-col-title { color: var(--red); }
+  .stop-item { font-size: 11px; color: var(--text-secondary); line-height: 1.7; }
+
+  /* PLAN / SYSTEM TAB */
+  .plan-week { margin-bottom: 4px; }
+  .week-hdr { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; cursor: pointer; border-bottom: 1px solid var(--border); }
+  .week-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: var(--orange); letter-spacing: 0.5px; }
+  .week-meta { display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .week-chevron { transition: transform 0.2s; font-size: 12px; }
+  .week-chevron.open { transform: rotate(180deg); }
+  .week-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .week-body.open { max-height: 600px; }
+  .day-block { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .day-block:last-child { border-bottom: none; }
+  .day-name { font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); }
+  .day-schema { font-size: 14px; color: var(--text-primary); margin-top: 2px; }
+  .day-weights { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--orange); margin-top: 2px; }
+  .day-note { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 2px; }
+  .day-custom-weights { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--blue); margin-top: 4px; line-height: 1.6; }
+  .plan-note { font-size: 13px; color: var(--text-secondary); line-height: 2.2; }
+  .plan-note strong { color: var(--orange); font-weight: 600; }
+
+  /* FRAMEWORK SECTIONS */
+  .fw-section { margin-bottom: 4px; }
+  .fw-section-hdr {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0; cursor: pointer; border-bottom: 1px solid var(--border);
+  }
+  .fw-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 0.5px; }
+  .fw-section-title.t-orange { color: var(--orange); }
+  .fw-section-title.t-blue { color: var(--blue); }
+  .fw-section-title.t-green { color: var(--green); }
+  .fw-section-title.t-yellow { color: var(--yellow); }
+  .fw-section-title.t-purple { color: var(--purple); }
+  .fw-section-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .fw-chevron { transition: transform 0.2s; font-size: 12px; color: var(--text-muted); }
+  .fw-chevron.open { transform: rotate(180deg); }
+  .fw-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .fw-body.open { max-height: 1200px; }
+  .fw-content { padding: 14px 0; }
+
+  /* Framework specific components */
+  .cluster-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .cluster-box { padding: 14px; border-radius: var(--radius-sm); text-align: center; }
+  .cluster-box.standard { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.25); }
+  .cluster-box.cluster { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.25); }
+  .cluster-box-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .cluster-box.standard .cluster-box-title { color: var(--red); }
+  .cluster-box.cluster .cluster-box-title { color: var(--green); }
+  .cluster-bars { display: flex; gap: 3px; align-items: flex-end; justify-content: center; height: 50px; margin-bottom: 8px; }
+  .cluster-bar { width: 10px; border-radius: 2px 2px 0 0; }
+  .cluster-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; }
+  .cluster-box.standard .cluster-badge { background: var(--red-bg); color: var(--red); }
+  .cluster-box.cluster .cluster-badge { background: var(--green-bg); color: var(--green); }
+
+  .principle-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .principle-item:last-child { border-bottom: none; }
+  .principle-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; min-width: 70px; padding-top: 1px; }
+  .principle-label.orange { color: var(--orange); }
+  .principle-label.green { color: var(--green); }
+  .principle-label.blue { color: var(--blue); }
+  .principle-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* Pause table */
+  .pause-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .pause-table th { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  .pause-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: top; }
+  .pause-table tr:last-child td { border-bottom: none; }
+  .pause-table .wk-label { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 0.5px; }
+  .pause-table .reason { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); }
+  .mono-val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+
+  /* Progression logic */
+  .prog-flow { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 14px 0; }
+  .prog-step { flex: 1; padding: 12px 8px; border-radius: var(--radius-xs); text-align: center; }
+  .prog-step.vol { background: var(--blue-dim); border: 1px solid rgba(77,163,255,0.25); }
+  .prog-step.den { background: var(--orange-glow); border: 1px solid rgba(232,89,12,0.25); }
+  .prog-step.int { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+  .prog-step-label { font-family: 'IBM Plex Mono', monospace; font-size: 8px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .prog-step.vol .prog-step-label { color: var(--blue); }
+  .prog-step.den .prog-step-label { color: var(--orange); }
+  .prog-step.int .prog-step-label { color: var(--red); }
+  .prog-step-val { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.5px; color: var(--text-primary); }
+  .prog-arrow { color: var(--text-muted); font-size: 14px; flex-shrink: 0; }
+
+  /* 3-Tier system */
+  .tier-item { padding: 14px; margin-bottom: 8px; border-radius: var(--radius-sm); border-left: 3px solid; }
+  .tier-item.t1 { background: rgba(239,68,68,0.06); border-color: var(--red); }
+  .tier-item.t2 { background: var(--orange-glow); border-color: var(--orange); }
+  .tier-item.t3 { background: var(--green-bg); border-color: var(--green); }
+  .tier-name { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .tier-item.t1 .tier-name { color: var(--red); }
+  .tier-item.t2 .tier-name { color: var(--orange); }
+  .tier-item.t3 .tier-name { color: var(--green); }
+  .tier-exercises { font-size: 13px; color: var(--text-primary); font-weight: 500; margin-bottom: 4px; }
+  .tier-protocol { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* Accessory scaling table */
+  .acc-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  .acc-table th { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); padding: 6px 8px; text-align: center; }
+  .acc-table td { padding: 8px; text-align: center; border-bottom: 1px solid var(--border); }
+  .acc-table tr:last-child td { border-bottom: none; }
+  .acc-chip { display: inline-block; padding: 4px 10px; border-radius: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; }
+  .acc-chip.t2-w1 { background: rgba(232,89,12,0.2); color: var(--orange); }
+  .acc-chip.t2-w2 { background: rgba(232,89,12,0.16); color: var(--orange-light); }
+  .acc-chip.t2-w3 { background: rgba(232,89,12,0.12); color: #ff9a5c; }
+  .acc-chip.t2-w4 { background: rgba(139,144,165,0.12); color: var(--text-secondary); }
+  .acc-chip.t3-w1 { background: rgba(34,197,94,0.18); color: var(--green); }
+  .acc-chip.t3-w2 { background: rgba(34,197,94,0.14); color: #4ade80; }
+  .acc-chip.t3-w3 { background: rgba(34,197,94,0.10); color: #86efac; }
+  .acc-chip.t3-w4 { background: rgba(139,144,165,0.12); color: var(--text-secondary); }
+  .acc-row-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; text-align: left; padding-left: 8px; }
+  .acc-row-label.t2 { color: var(--orange); }
+  .acc-row-label.t3 { color: var(--green); }
+
+  /* Myo-Rep */
+  .myo-activate { padding: 12px 14px; background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); border-radius: var(--radius-xs); margin-bottom: 12px; }
+  .myo-activate-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 4px; }
+  .myo-activate-val { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-primary); }
+  .myo-sets-row { display: flex; gap: 6px; align-items: center; margin: 12px 0; overflow-x: auto; padding-bottom: 4px; }
+  .myo-set-chip { flex-shrink: 0; padding: 10px 10px; border-radius: var(--radius-xs); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; text-align: center; min-width: 52px; }
+  .myo-set-chip.go { background: var(--orange-glow); border: 1px solid rgba(232,89,12,0.3); color: var(--orange); }
+  .myo-set-chip.warn { background: var(--yellow-bg); border: 1px solid rgba(234,179,8,0.3); color: var(--yellow); }
+  .myo-set-chip.stop { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+  .myo-pause-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+  .myo-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .myo-col { padding: 12px; border-radius: var(--radius-xs); }
+  .myo-col.go { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); }
+  .myo-col.stop { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); }
+  .myo-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .myo-col.go .myo-col-title { color: var(--green); }
+  .myo-col.stop .myo-col-title { color: var(--red); }
+  .myo-col-item { font-size: 11px; color: var(--text-secondary); line-height: 1.8; }
+  .myo-suitedfor { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 10px; line-height: 1.7; }
+
+  /* TM Progression */
+  .tm-prog-node {
+    text-align: center; padding: 12px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; margin-bottom: 8px;
+  }
+  .tm-prog-node.start { background: var(--blue-dim); border: 1px solid rgba(77,163,255,0.25); color: var(--blue); }
+  .tm-prog-node.question { background: var(--orange-glow); border: 1px solid rgba(232,89,12,0.25); color: var(--orange); }
+  .tm-prog-branches { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .tm-prog-branch { padding: 12px 8px; border-radius: var(--radius-xs); text-align: center; }
+  .tm-prog-branch.green { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.25); }
+  .tm-prog-branch.yellow { background: var(--yellow-bg); border: 1px solid rgba(234,179,8,0.25); }
+  .tm-prog-branch.red { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.25); }
+  .tm-prog-branch-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .tm-prog-branch.green .tm-prog-branch-label { color: var(--green); }
+  .tm-prog-branch.yellow .tm-prog-branch-label { color: var(--yellow); }
+  .tm-prog-branch.red .tm-prog-branch-label { color: var(--red); }
+  .tm-prog-val { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: var(--text-primary); letter-spacing: 0.3px; line-height: 1.4; }
+  .tm-prog-action { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .tm-prog-arrow { text-align: center; color: var(--text-muted); font-size: 18px; margin: 2px 0; }
+
+  /* Neuro Readiness display */
+  .readiness-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
+  .ri-item { padding: 14px 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center; }
+  .ri-icon { font-size: 22px; margin-bottom: 6px; }
+  .ri-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .ri-desc { font-size: 11px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+  .ampel-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0; }
+  .ampel-item { padding: 12px 8px; border-radius: var(--radius-xs); text-align: center; }
+  .ampel-item.green { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.3); }
+  .ampel-item.yellow { background: var(--yellow-bg); border: 1px solid rgba(234,179,8,0.3); }
+  .ampel-item.red { background: var(--red-bg); border: 1px solid rgba(239,68,68,0.3); }
+  .ampel-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
+  .ampel-item.green .ampel-label { color: var(--green); }
+  .ampel-item.yellow .ampel-label { color: var(--yellow); }
+  .ampel-item.red .ampel-label { color: var(--red); }
+  .ampel-desc { font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+
+  /* PROGRESS CHARTS */
+  .chart-sub { font-size: 11px; color: var(--text-muted); margin: -10px 0 14px; font-family: 'IBM Plex Mono', monospace; }
+  .chart-empty { text-align: center; font-size: 12px; color: var(--text-muted); padding: 24px 0 8px; display: none; }
+  .chart-empty.show { display: block; }
+  canvas { width: 100% !important; border-radius: 6px; }
+  .day-filter { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .day-filter::-webkit-scrollbar { display: none; }
+  .filter-btn { padding: 6px 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 20px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 10px; cursor: pointer; white-space: nowrap; }
+  .filter-btn.active { background: var(--orange-glow); border-color: var(--orange); color: var(--orange); font-weight: 600; }
+  .matrix-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .ml-item { display: flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .ml-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .trend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .trend-item { padding: 14px 10px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); text-align: center; }
+  .trend-item.t-green { border-color: var(--green); }
+  .trend-item.t-yellow { border-color: var(--yellow); }
+  .trend-item.t-red { border-color: var(--red); }
+  .trend-arrow { font-size: 24px; line-height: 1; margin-bottom: 4px; }
+  .trend-metric { font-family: 'IBM Plex Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 2px; }
+  .trend-detail { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+  .cycle-cards { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: none; }
+  .cycle-cards::-webkit-scrollbar { display: none; }
+  .cycle-card { flex: 0 0 auto; min-width: 130px; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-xs); text-align: center; }
+  .cycle-card.current { border-color: var(--orange); }
+  .cc-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--orange); letter-spacing: 0.5px; }
+  .cc-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; }
+  .cc-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .cc-val { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-primary); font-weight: 600; }
+  .cc-trend { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; }
+  .cc-trend.up { background: var(--green-bg); color: var(--green); }
+  .cc-trend.flat { background: var(--yellow-bg); color: var(--yellow); }
+  .cc-trend.down { background: var(--red-bg); color: var(--red); }
+  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .stat-item { text-align: center; padding: 12px 4px; background: var(--bg-input); border-radius: var(--radius-xs); border: 1px solid var(--border); }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--text-primary); line-height: 1; }
+  .stat-val.green { color: var(--green); }
+  .stat-val.yellow { color: var(--yellow); }
+  .stat-val.red { color: var(--red); }
+  .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
+  .stat-bar-wrap { margin-top: 14px; }
+  .stat-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg-elevated); }
+  .stat-bar-seg { height: 100%; transition: width 0.5s ease; }
+  .stat-bar-seg.green { background: var(--green); }
+  .stat-bar-seg.yellow { background: var(--yellow); }
+  .stat-bar-seg.red { background: var(--red); }
+
+  /* LOG */
+  .log-empty { text-align: center; padding: 48px 20px; font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+  .log-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.3; }
+  .log-entry { padding: 14px 0; border-bottom: 1px solid var(--border); animation: cardIn 0.3s ease both; }
+  .log-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .log-date { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .log-status-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .log-status-tag.green { background: var(--green-bg); color: var(--green); }
+  .log-status-tag.yellow { background: var(--yellow-bg); color: var(--yellow); }
+  .log-status-tag.red { background: var(--red-bg); color: var(--red); }
+  .log-body { font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+  .log-highlight { color: var(--orange); font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+  .log-clear-btn { margin-top: 16px; padding: 10px; width: 100%; background: none; border: 1px solid var(--border); border-radius: var(--radius-xs); color: var(--text-muted); font-size: 11px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; display: none; }
+  .export-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .export-btn { padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .export-btn:active { border-color: var(--orange); color: var(--orange); }
+
+  /* MISC */
+  .offline-badge { position: fixed; top: 56px; left: 50%; transform: translateX(-50%); z-index: 150; padding: 4px 14px; border-radius: 12px; background: var(--yellow-bg); border: 1px solid var(--yellow); font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--yellow); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .offline-badge.show { opacity: 1; }
+  .setup-required-card { border: 1px dashed var(--orange) !important; background: var(--orange-glow) !important; }
+  .footer { text-align: center; padding: 24px 20px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); letter-spacing: 0.3px; line-height: 1.8; }
+  .info-box { padding: 12px 14px; background: var(--bg-input); border-left: 3px solid var(--orange); border-radius: 0 var(--radius-xs) var(--radius-xs) 0; margin: 10px 0; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .info-box strong { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <div class="header-logo">NP</div>
+    <div class="header-title"><span>Neuro</span><span>Pendulum</span></div>
+  </div>
+  <div class="header-badge">Beta v0.9</div>
+</div>
+<div class="offline-badge" id="offline-badge">⚡ Offline</div>
+
+<div class="main">
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="card">
+      <div class="status-display">
+        <div class="status-label">Heutiger Status</div>
+        <div id="dash-status" class="status-badge" style="background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);box-shadow:none;">KEIN CHECK-IN</div>
+        <div id="dash-subtitle" class="status-subtitle">Starte einen Check-in vor dem Training.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="dash-lifts-title">Heutige Gewichte</div>
+      <div class="lift-grid" id="dash-lift-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:16px 0;color:var(--text-muted);font-size:13px;line-height:1.8;">
+          Noch kein Check-in.<br>Gewichte erscheinen nach dem Check-in.
+        </div>
+      </div>
+      <div class="intensity-meter">
+        <div class="meter-header">
+          <span class="meter-label">Intensität</span>
+          <span class="meter-value" id="dash-int">—</span>
+        </div>
+        <div class="meter-track">
+          <div class="meter-fill" id="dash-int-fill" style="width:0%;background:var(--green);"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card setup-required-card" id="setup-hint" style="display:none;">
+      <div style="text-align:center;padding:8px 0;">
+        <div style="font-size:24px;margin-bottom:8px;">🎯</div>
+        <div style="font-weight:600;margin-bottom:4px;">Zuerst: Deine 1RM-Werte eintragen</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Trage deine aktuellen Maximalgewichte ein, damit die Engine deine Trainingsgewichte berechnen kann.</div>
+      </div>
+      <button class="quick-action" onclick="switchTab('setup')" style="margin-top:10px;">⚙ Setup starten</button>
+    </div>
+
+    <div class="quick-action" id="checkin-action" onclick="switchTab('checkin')">⚡ Check-in starten</div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="card-title">Was ist das?</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;margin-bottom:14px;">
+        Ein datenbasiertes Autoregulations-System für Kraftsportler. Es misst vor jedem Training deine neuronale Bereitschaft und passt Intensität und Volumen automatisch an.<br>
+        <strong style="color:var(--orange);">Kein Bauchgefühl — Daten.</strong><br><br>
+        <span style="color:var(--text-muted);font-size:12px;">Dieses System ist ein <strong style="color:var(--orange);">FRAMEWORK</strong>, kein starrer Plan.<br>
+        Die Struktur steht fest — die Details passt du an dich an.</span>
+      </div>
+      <div class="framework-grid">
+        <div class="fw-item"><div class="fw-label">Frequenz</div><div class="fw-value">4× / Woche</div></div>
+        <div class="fw-item"><div class="fw-label">Zyklus</div><div class="fw-value">3 + 1 Deload</div></div>
+        <div class="fw-item"><div class="fw-label">Methode</div><div class="fw-value">Cluster-Sets</div></div>
+        <div class="fw-item"><div class="fw-label">Failsafe</div><div class="fw-value">Myo-Reps</div></div>
+        <div class="fw-item"><div class="fw-label">Tier-System</div><div class="fw-value">T1 / T2 / T3</div></div>
+        <div class="fw-item"><div class="fw-label">Readiness</div><div class="fw-value">4 Inputs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SETUP ═══ -->
+  <div id="tab-setup" class="tab-content">
+    <div class="card">
+      <div class="section-header orange">Tag 1 — Hauptübungen</div>
+      <div class="section-sub">Empfohlene T1-Lifts — kein Dogma, du kannst andere wählen.</div>
+      <div style="padding:10px 12px;background:var(--orange-glow);border:1px solid rgba(232,89,12,0.2);border-radius:var(--radius-xs);font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px;">
+        💡 <strong style="color:var(--orange);">Empfehlung, kein Zwang.</strong> Du kannst unten eigene Übungen für Tag 1 hinzufügen — auch andere Hauptübungen. Die 1RM-Felder hier sind optional: nur ausfüllen wenn du diese Übungen machst.
+      </div>
+      <div class="input-row">
+        <div class="input-label">Kniebeuge</div>
+        <input type="number" class="input-field" id="s-kb" placeholder="1RM" inputmode="decimal">
+        <div class="tm-display">85%</div>
+        <div class="tm-value" id="tm-kb">—</div>
+      </div>
+      <div class="input-row">
+        <div class="input-label">Kreuzheben</div>
+        <input type="number" class="input-field" id="s-kh" placeholder="1RM" inputmode="decimal">
+        <div class="tm-display">85%</div>
+        <div class="tm-value" id="tm-kh">—</div>
+      </div>
+      <div class="input-row">
+        <div class="input-label">Bankdrücken</div>
+        <input type="number" class="input-field" id="s-bd" placeholder="1RM" inputmode="decimal">
+        <div class="tm-display">85%</div>
+        <div class="tm-value" id="tm-bd">—</div>
+      </div>
+      <div class="input-row">
+        <div class="input-label">Military Press</div>
+        <input type="number" class="input-field" id="s-mp" placeholder="1RM" inputmode="decimal">
+        <div class="tm-display">85%</div>
+        <div class="tm-value" id="tm-mp">—</div>
+      </div>
+      <button class="save-btn" onclick="saveSetup()">Änderungen speichern</button>
+      <div class="save-msg" id="save-msg">✓ Gespeichert</div>
+    </div>
+
+    <div class="card">
+      <div class="section-header blue">TM-Progression pro Zyklus</div>
+      <div class="section-sub">Nach jedem abgeschlossenen 4-Wochen-Zyklus (wenn W3 GRÜN war).</div>
+      <div class="progression-info">
+        Unterkörper (KB, KH): <span class="val">+5 kg</span><br>
+        Oberkörper (BD, MP): <span class="val">+2,5 kg</span><br>
+        W3 GELB: <span class="val">TM bleibt gleich — Zyklus wiederholen</span><br>
+        W3 ROT: <span class="val">TM −5% — Reset + Neustart</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-header orange">Eigene Übungen — Alle Tage</div>
+      <div class="section-sub">Tag 1 & 3: Ergänzungen zu Hauptübungen (z.B. Klimmzüge, Rudern). Tag 2 & 4: freie Wahl.</div>
+      <div class="add-row">
+        <input class="add-input" id="cx-name" placeholder="Übungsname" maxlength="30">
+        <input class="add-input-rm" id="cx-rm" type="number" placeholder="1RM" inputmode="decimal">
+        <button class="add-btn" onclick="addCustom()">+</button>
+      </div>
+      <div style="margin-top:8px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-muted);margin-bottom:6px;">Tag auswählen:</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;" id="cx-days">
+          <button class="sel-btn" data-v="1" style="font-size:11px;padding:9px 4px;">Tag 1</button>
+          <button class="sel-btn active" data-v="2" style="font-size:11px;padding:9px 4px;">Tag 2</button>
+          <button class="sel-btn" data-v="3" style="font-size:11px;padding:9px 4px;">Tag 3</button>
+          <button class="sel-btn" data-v="4" style="font-size:11px;padding:9px 4px;">Tag 4</button>
+          <button class="sel-btn" data-v="234" style="font-size:11px;padding:9px 4px;">2-4</button>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:5px;">
+          1RM = 0 für Körpergewicht-Übungen (Klimmzüge, Dips etc.)
+        </div>
+      </div>
+      <div id="cx-list"></div>
+      <div class="save-msg" id="cx-msg">✓ Übung hinzugefügt</div>
+    </div>
+  </div>
+
+  <!-- ═══ CHECK-IN ═══ -->
+  <div id="tab-checkin" class="tab-content">
+    <div class="card">
+      <div class="checkin-hero">
+        <div class="checkin-title">60-Sekunden Check-in</div>
+        <div class="checkin-sub">Vor dem Training ausfüllen → Empfehlung sofort.</div>
+        <div class="checkin-timer">⏱ ~60 Sekunden</div>
+      </div>
+
+      <div class="wd-row">
+        <div class="wd-group">
+          <label>Woche</label>
+          <select class="wd-select" id="ci-week">
+            <option value="1">W1 — Einstieg</option>
+            <option value="2" selected>W2 — Intensivierung</option>
+            <option value="3">W3 — Neural Peak</option>
+            <option value="4">W4 — Deload</option>
+          </select>
+        </div>
+        <div class="wd-group">
+          <label>Tag</label>
+          <select class="wd-select" id="ci-day">
+            <option value="1" selected>Tag 1 — Schwer</option>
+            <option value="2">Tag 2 — Hypertrophie</option>
+            <option value="3">Tag 3 — Mittel</option>
+            <option value="4">Tag 4 — Metabolisch</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ci-field">
+        <div class="ci-label"><span class="ci-label-text">Schlaf (Stunden)</span><span class="ci-hint">z.B. 7.5</span></div>
+        <input type="number" class="ci-input" id="ci-sleep" value="7.5" step="0.5" min="0" max="14" inputmode="decimal">
+      </div>
+
+      <div class="ci-field">
+        <div class="ci-label"><span class="ci-label-text">Schlafqualität</span><span class="ci-hint">1 = miserabel · 5 = perfekt</span></div>
+        <div class="ci-select cols-5" id="ci-sleepq">
+          <button class="sel-btn" data-v="1">1</button>
+          <button class="sel-btn" data-v="2">2</button>
+          <button class="sel-btn" data-v="3">3</button>
+          <button class="sel-btn active" data-v="4">4</button>
+          <button class="sel-btn" data-v="5">5</button>
+        </div>
+      </div>
+
+      <div class="ci-field">
+        <div class="ci-label"><span class="ci-label-text">Fatigue</span><span class="ci-hint">1 = frisch · 10 = fertig</span></div>
+        <div class="slider-wrap">
+          <div class="slider-val" id="fat-display">4</div>
+          <input type="range" id="ci-fatigue" min="1" max="10" value="4" oninput="updateFatigue(this.value)">
+          <div class="slider-labels"><span>1 frisch</span><span>10 fertig</span></div>
+        </div>
+      </div>
+
+      <div class="ci-field">
+        <div class="ci-label"><span class="ci-label-text">Explosivität</span><span class="ci-hint">nach 2-3 Warm-up Sätzen</span></div>
+        <div class="ci-select cols-5" id="ci-explo">
+          <button class="sel-btn" data-v="1">1</button>
+          <button class="sel-btn" data-v="2">2</button>
+          <button class="sel-btn" data-v="3">3</button>
+          <button class="sel-btn active" data-v="4">4</button>
+          <button class="sel-btn" data-v="5">5</button>
+        </div>
+        <div class="sel-hint">1 = Stange klebt · 3 = normal · 5 = fliegt</div>
+      </div>
+
+      <div class="ci-field">
+        <div class="ci-label"><span class="ci-label-text">Muskelkater / Soreness</span><span class="ci-hint">1 = keiner · 5 = brutal</span></div>
+        <div class="ci-select cols-5" id="ci-doms">
+          <button class="sel-btn" data-v="1">1</button>
+          <button class="sel-btn active" data-v="2">2</button>
+          <button class="sel-btn" data-v="3">3</button>
+          <button class="sel-btn" data-v="4">4</button>
+          <button class="sel-btn" data-v="5">5</button>
+        </div>
+      </div>
+
+      <button class="run-btn" onclick="runCheckin()">CHECK-IN STARTEN</button>
+    </div>
+
+    <div class="result-card card" id="result-card">
+      <div class="result-status">
+        <div id="res-badge" class="result-badge"></div>
+        <div class="result-int">Empfohlene Intensität: <strong id="res-int">—</strong></div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-title" id="res-lifts-title">Tag 1 — Alle Lifts</div>
+      <div class="result-lifts" id="res-lifts-container"></div>
+      <div class="adj-box" id="adj-box"></div>
+      <div class="stop-regel-box" id="stop-regel-box">
+        <div class="stop-regel-title">⚡ W3 Stop-Regel</div>
+        <div class="stop-col">
+          <div class="stop-continue">
+            <div class="stop-col-title">Weitermachen wenn:</div>
+            <div class="stop-item">✓ Velocity stabil (±5% von S1)<br>✓ RPE ≤ 8.5<br>✓ Technik sauber</div>
+          </div>
+          <div class="stop-halt">
+            <div class="stop-col-title">Stoppen wenn:</div>
+            <div class="stop-item">✗ Velocity Drop &gt;15%<br>✗ RPE ≥ 9<br>✗ 10 Singles erreicht</div>
+          </div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:10px;line-height:1.6;">Ohne VBT-Gerät: RPE ≥ 9 oder sichtbarer Geschwindigkeitsverlust = Stop.</div>
+      </div>
+      <div class="myo-alert" id="myo-alert">⚡ Myo-Reps Failsafe — Volumen reduziert. Ziel-Wdh nicht erreicht → 10s Pause, weitermachen bis Technik bricht oder &lt;3 Reps.</div>
+      <div class="decision-row">
+        <button class="decision-btn accept" onclick="logDecision('accept')">✓ Accept</button>
+        <button class="decision-btn override" onclick="logDecision('override')">↻ Override</button>
+      </div>
+      <div class="decision-msg" id="dec-msg"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SYSTEM (Plan + Framework) ═══ -->
+  <div id="tab-plan" class="tab-content">
+
+    <!-- 4-Week Cycle -->
+    <div class="card">
+      <div class="card-title">4-Wochen-Zyklus — Tag 1</div>
+      <div id="plan-weeks"></div>
+    </div>
+
+    <!-- Tag 2-4 plan -->
+    <div class="card">
+      <div class="card-title">Tag 2 – 4</div>
+      <div class="plan-note">
+        <strong>Tag 2 — Hypertrophie:</strong> Deine Übungen @ 55%<br>
+        <strong>Tag 3 — Mittel:</strong> Deine Übungen @ 70%<br>
+        <strong>Tag 4 — Metabolisch:</strong> Deine Übungen @ 30%
+      </div>
+    </div>
+
+    <!-- FRAMEWORK REFERENCE -->
+    <div class="card">
+      <div class="card-title">System-Referenz</div>
+
+      <!-- Was ist das -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-orange">Was ist das?</div>
+            <div class="fw-section-sub">Pendel-Cluster Autoregulations-Framework</div>
+          </div>
+          <span class="fw-chevron open">▾</span>
+        </div>
+        <div class="fw-body open">
+          <div class="fw-content">
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;margin-bottom:12px;">
+              Ein datenbasiertes Autoregulations-System für Kraftsportler. Es misst vor jedem Training deine neuronale Bereitschaft und passt Intensität und Volumen automatisch an. <strong style="color:var(--orange);">Kein Bauchgefühl — Daten.</strong>
+            </div>
+            <div class="info-box" style="margin-bottom:12px;"><strong>Dieses System ist ein FRAMEWORK, kein starrer Plan.</strong><br>
+            Die Struktur steht fest — die Details passt du an dich an.</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:2.2;">
+              📅 <strong style="color:var(--text-primary);">Frequenz:</strong> 4× pro Woche, Ganzkörper<br>
+              🔁 <strong style="color:var(--text-primary);">Zyklus:</strong> 3 Wochen steigern → 1 Woche Deload<br>
+              <span style="color:var(--red);">Tag 1:</span> Schwer / Cluster (KB, KH, BD, MP, Klimmzüge, Rudern)<br>
+              <span style="color:var(--orange);">Tag 2:</span> Hypertrophie — DEINE Übungswahl<br>
+              <span style="color:var(--blue);">Tag 3:</span> Mittlere Intensität — DEINE Übungswahl<br>
+              <span style="color:var(--green);">Tag 4:</span> Metabolisch — DEINE Übungswahl
+            </div>
+            <div style="margin-top:12px;font-size:12px;color:var(--text-muted);line-height:1.7;">
+              Pausen, Übungen, Variationen → variabel, nach Erfahrung.<br>
+              Myo-Reps als Failsafe: Ziel-Wdh nicht erreicht? → 10s Pause, weitermachen bis Ziel voll.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- So benutzt du es -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-blue">So benutzt du es</div>
+            <div class="fw-section-sub">3 Schritte, jedes Training</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);min-width:28px;">1</div>
+              <div><div style="font-weight:600;font-size:14px;margin-bottom:3px;">Setup</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">1RM und TM-Faktor für deine Hauptübungen eintragen. Tag 2–4 Übungen frei wählen. TM-Faktor 85% ist empfohlen.</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);min-width:28px;">2</div>
+              <div><div style="font-weight:600;font-size:14px;margin-bottom:3px;">Vor dem Training → Tab "Check-in"</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Übung, Woche, Tag auswählen. Schlaf, Fatigue, Explosivität eintragen. Die Empfehlung erscheint automatisch.</div></div>
+            </div>
+            <div style="display:flex;gap:12px;padding:12px 0;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--orange);min-width:28px;">3</div>
+              <div><div style="font-weight:600;font-size:14px;margin-bottom:3px;">Nach dem Training → Tab "Log"</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Alle Daten übertragen. Empfohlenes vs. tatsächliches Gewicht. Accept oder Override + warum.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Readiness Regeln -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-green">Readiness-Regeln</div>
+            <div class="fw-section-sub">Wie die Ampel entschieden wird</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;padding:4px 10px;border-radius:6px;background:var(--green-bg);color:var(--green);min-width:56px;text-align:center;">GRÜN</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Trainiere wie geplant. Alles passt. Volle Intensität.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;padding:4px 10px;border-radius:6px;background:var(--yellow-bg);color:var(--yellow);min-width:56px;text-align:center;">GELB</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Anpassung empfohlen. Schlaf &lt;6h oder Fatigue ≥7. Intensität reduzieren.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;padding:4px 10px;border-radius:6px;background:var(--red-bg);color:var(--red);min-width:56px;text-align:center;">ROT</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Stop. Fatigue ≥9. Deload oder Pause. Dein Körper braucht Erholung, nicht Ego.</div>
+            </div>
+            <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--orange);margin-bottom:8px;">Explosivität (nach Warm-up bewerten!):</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
+              ≤2 (Stange klebt): −5% Intensität, −20% Volumen<br>
+              =3 (normal): −2.5% Intensität<br>
+              ≥4 (gut/explosiv): Keine Anpassung
+            </div>
+            <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--orange);margin-bottom:6px;">Zusätzliche Faktoren:</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
+              Schlaf &lt;5h: zusätzlich −2.5%<br>
+              Schlafqualität ≤2: −1.5%<br>
+              Soreness ≥4: −1.5% / −15% Vol<br>
+              3+ Stressoren gleichzeitig: −2.5% extra
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Cluster-Prinzip -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-orange">Cluster-Training</div>
+            <div class="fw-section-sub">Warum kurze Pausen den Unterschied machen</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div class="cluster-compare">
+              <div class="cluster-box standard">
+                <div class="cluster-box-title">Standard Satz</div>
+                <div class="cluster-bars">
+                  <div class="cluster-bar" style="height:90%;background:var(--green);"></div>
+                  <div class="cluster-bar" style="height:72%;background:#86efac;"></div>
+                  <div class="cluster-bar" style="height:55%;background:var(--yellow);"></div>
+                  <div class="cluster-bar" style="height:38%;background:#fb923c;"></div>
+                  <div class="cluster-bar" style="height:22%;background:var(--red);"></div>
+                </div>
+                <div class="cluster-badge">Hohe Metabolische Ermüdung</div>
+              </div>
+              <div class="cluster-box cluster">
+                <div class="cluster-box-title">Cluster Satz</div>
+                <div class="cluster-bars">
+                  <div class="cluster-bar" style="height:90%;background:var(--green);"></div>
+                  <div class="cluster-bar" style="height:88%;background:var(--green);"></div>
+                  <div class="cluster-bar" style="height:86%;background:var(--green);"></div>
+                  <div class="cluster-bar" style="height:87%;background:var(--green);"></div>
+                  <div class="cluster-bar" style="height:85%;background:var(--green);"></div>
+                </div>
+                <div class="cluster-badge">Hoher Neuronaler Output</div>
+              </div>
+            </div>
+            <div class="principle-item">
+              <div class="principle-label orange">Prinzip</div>
+              <div class="principle-text">Kurze Pausen (10–30s) innerhalb der Sätze zwischen je 1–3 Wiederholungen.</div>
+            </div>
+            <div class="principle-item">
+              <div class="principle-label green">Vorteil</div>
+              <div class="principle-text">Hoher neuronaler Output ohne metabolischen Burnout. Das ZNS kann mit maximaler Spannung arbeiten.</div>
+            </div>
+            <div class="principle-item">
+              <div class="principle-label blue">Ergebnis</div>
+              <div class="principle-text">ZNS-Schonung bei maximaler mechanischer Spannung — mehr Kraft bei weniger Erschöpfung.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Pausenarchitektur -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-blue">Pausenarchitektur</div>
+            <div class="fw-section-sub">Intra-Set + Inter-Set — beides definiert</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <table class="pause-table">
+              <thead>
+                <tr>
+                  <th>Woche</th>
+                  <th>Intra-Set</th>
+                  <th>Inter-Set</th>
+                  <th>Warum</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="wk-label" style="color:var(--green);">W1</span></td>
+                  <td><span class="mono-val">30s</span></td>
+                  <td><span class="mono-val">2–3 min</span></td>
+                  <td><span class="reason">Volumen-Akkumulation</span></td>
+                </tr>
+                <tr>
+                  <td><span class="wk-label" style="color:var(--orange);">W2</span></td>
+                  <td><span class="mono-val">20–30s</span></td>
+                  <td><span class="mono-val">2–3 min</span></td>
+                  <td><span class="reason">Dichte-Steigerung</span></td>
+                </tr>
+                <tr>
+                  <td><span class="wk-label" style="color:var(--red);">W3</span></td>
+                  <td><span class="mono-val">— (Singles)</span></td>
+                  <td><span class="mono-val">3–5 min</span></td>
+                  <td><span class="reason">Volle ZNS-Erholung</span></td>
+                </tr>
+                <tr>
+                  <td><span class="wk-label" style="color:var(--blue);">W4</span></td>
+                  <td><span class="mono-val">—</span></td>
+                  <td><span class="mono-val">1.5–2 min</span></td>
+                  <td><span class="reason">Erholung, egal</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="info-box">Inter-Set Pausen steigen mit der Intensität — das ZNS braucht mehr Recovery bei höheren Lasten.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Progressions-Logik -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-yellow">Progressions-Logik</div>
+            <div class="fw-section-sub">Volume → Density → Intensity</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div class="prog-flow">
+              <div class="prog-step vol">
+                <div class="prog-step-label">W1</div>
+                <div class="prog-step-val">5×3 @ 80%</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--blue);margin-top:4px;">Volume</div>
+              </div>
+              <div class="prog-arrow">→</div>
+              <div class="prog-step den">
+                <div class="prog-step-label">W2</div>
+                <div class="prog-step-val">10×2 @ 85%</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--orange);margin-top:4px;">Density</div>
+              </div>
+              <div class="prog-arrow">→</div>
+              <div class="prog-step int">
+                <div class="prog-step-label">W3</div>
+                <div class="prog-step-val">7-10×1 @ 90%</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--red);margin-top:4px;">Intensity</div>
+              </div>
+            </div>
+            <div class="info-box"><strong>Die Logik:</strong> Last steigt ↑, Reps sinken ↓ = ZNS-Schutz. Nicht mehr Last mit mehr Volumen. Zuerst Volumen aufbauen, dann verdichten, dann peaken.</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:12px;line-height:1.8;">
+              W4 Deload bei 65% — hoch genug um motorische Muster zu erhalten, niedrig genug für volle Regeneration.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 3-Tier System -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-orange">3-Tier-System</div>
+            <div class="fw-section-sub">Mehr als nur Hauptübungen</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div class="tier-item t1">
+              <div class="tier-name">Tier 1 — Hauptübung</div>
+              <div class="tier-exercises">Squat · Bench · Deadlift · OHP</div>
+              <div class="tier-protocol">→ Cluster-Protokoll nach Wochenplan<br>→ 100% Fokus auf neuronalen Output</div>
+            </div>
+            <div class="tier-item t2">
+              <div class="tier-name">Tier 2 — Supplemental</div>
+              <div class="tier-exercises">Pause Squat · Close-Grip Bench · RDL · DB Press</div>
+              <div class="tier-protocol">→ 3–4 × 6–8 @ RPE 7<br>→ Bewegungsmuster stärken, Schwachstellen adressieren</div>
+            </div>
+            <div class="tier-item t3">
+              <div class="tier-name">Tier 3 — Assistance (Myo-Rep Option)</div>
+              <div class="tier-exercises">Rows · Curls · Face Pulls · Lateral Raises · Core</div>
+              <div class="tier-protocol">→ 2–3 × 10–15 @ RPE 6–7<br>→ ODER 1 Myo-Rep Set (12–15 + 5+5+5…)<br>→ Hypertrophie + Prävention</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Accessory-Skalierung -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-green">Accessory-Skalierung</div>
+            <div class="fw-section-sub">Volumen invers zur Hauptübung</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <table class="acc-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding-left:8px;">Tier</th>
+                  <th>W1</th>
+                  <th>W2</th>
+                  <th>W3</th>
+                  <th>W4</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="acc-row-label t2">T2</td>
+                  <td><span class="acc-chip t2-w1">4×8</span></td>
+                  <td><span class="acc-chip t2-w2">3×6</span></td>
+                  <td><span class="acc-chip t2-w3">2×6</span></td>
+                  <td><span class="acc-chip t2-w4">3×8 leicht</span></td>
+                </tr>
+                <tr>
+                  <td class="acc-row-label t3">T3</td>
+                  <td><span class="acc-chip t3-w1">3×12-15</span></td>
+                  <td><span class="acc-chip t3-w2">3×10-12</span></td>
+                  <td><span class="acc-chip t3-w3">2×10</span></td>
+                  <td><span class="acc-chip t3-w4">3×12 leicht</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="info-box">Je höher die neuronale Last (T1), desto weniger Volumen bei T2/T3.<br><strong>Weniger ist mehr</strong> — wenn die Hauptübung härter wird, geht Assistance-Volumen zurück.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Myo-Rep Protokoll -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-purple">Myo-Rep Protokoll</div>
+            <div class="fw-section-sub">Hypertrophie in Minuten — T3 Failsafe</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div class="myo-activate">
+              <div class="myo-activate-label">Aktivierungssatz</div>
+              <div class="myo-activate-val">12–15 Reps bis RPE 8–9</div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:6px;">↓ 10s Pause → Myo-Rep Sätze</div>
+            <div class="myo-sets-row">
+              <div class="myo-set-chip go">5 Reps</div>
+              <div class="myo-pause-label">10s</div>
+              <div class="myo-set-chip go">5 Reps</div>
+              <div class="myo-pause-label">10s</div>
+              <div class="myo-set-chip go">4 Reps</div>
+              <div class="myo-pause-label">10s</div>
+              <div class="myo-set-chip warn">3 Reps</div>
+              <div class="myo-pause-label">→</div>
+              <div class="myo-set-chip stop">✗ Stop</div>
+            </div>
+            <div class="myo-col-grid">
+              <div class="myo-col go">
+                <div class="myo-col-title">Warum bei T3 sinnvoll:</div>
+                <div class="myo-col-item">• Metabolischer Stress erwünscht (Hypertrophie)<br>• Kein ZNS-Belastung (Isolation)<br>• Enorme Zeitersparnis</div>
+              </div>
+              <div class="myo-col stop">
+                <div class="myo-col-title">Stop-Kriterien:</div>
+                <div class="myo-col-item">• Weniger als 3 Reps<br>• Technik bricht<br>• Max 5 Myo-Sets nach Aktivierung</div>
+              </div>
+            </div>
+            <div class="myo-suitedfor">Geeignet für: Curls · Lateral Raises · Face Pulls · Triceps Extensions · Leg Curls · Calf Raises</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. TM-Progression -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-orange">TM-Progression</div>
+            <div class="fw-section-sub">W3 bestimmt wie das Training Max steigt</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div class="tm-prog-node start">Zyklus abgeschlossen</div>
+            <div class="tm-prog-arrow">↓</div>
+            <div class="tm-prog-node question">Wie war Woche 3? (Ampel-Bilanz)</div>
+            <div class="tm-prog-arrow">↓</div>
+            <div class="tm-prog-branches">
+              <div class="tm-prog-branch green">
+                <div class="tm-prog-branch-label">Alle GRÜN</div>
+                <div class="tm-prog-val">UB +2.5 kg<br>UntK +5 kg</div>
+                <div class="tm-prog-action">Nächster Zyklus mit neuem TM</div>
+              </div>
+              <div class="tm-prog-branch yellow">
+                <div class="tm-prog-branch-label">GELB-Anpassungen</div>
+                <div class="tm-prog-val">TM bleibt gleich</div>
+                <div class="tm-prog-action">Zyklus wiederholen</div>
+              </div>
+              <div class="tm-prog-branch red">
+                <div class="tm-prog-branch-label">ROT / Abbruch</div>
+                <div class="tm-prog-val">TM −5%</div>
+                <div class="tm-prog-action">Reset + Neustart</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Neuro Readiness -->
+      <div class="fw-section">
+        <div class="fw-section-hdr" onclick="toggleFW(this)">
+          <div>
+            <div class="fw-section-title t-blue">Neuro Readiness</div>
+            <div class="fw-section-sub">Der 60-Sekunden Check-in</div>
+          </div>
+          <span class="fw-chevron">▾</span>
+        </div>
+        <div class="fw-body">
+          <div class="fw-content">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;font-family:'IBM Plex Mono',monospace;">Dein Training beginnt nicht mit einer Vermutung, sondern einer Entscheidung.</div>
+            <div class="readiness-inputs">
+              <div class="ri-item">
+                <div class="ri-icon">🌙</div>
+                <div class="ri-label">Schlaf</div>
+                <div class="ri-desc">Quantität & Qualität — beide zählen</div>
+              </div>
+              <div class="ri-item">
+                <div class="ri-icon">🔋</div>
+                <div class="ri-label">Fatigue</div>
+                <div class="ri-desc">Subjektive Belastung 1–10</div>
+              </div>
+              <div class="ri-item">
+                <div class="ri-icon">⚡</div>
+                <div class="ri-label">Explosivität</div>
+                <div class="ri-desc">Bar Speed im Warm-up</div>
+              </div>
+              <div class="ri-item">
+                <div class="ri-icon">💢</div>
+                <div class="ri-label">Soreness</div>
+                <div class="ri-desc">Muskelkater 1–5 (neu in V2)</div>
+              </div>
+            </div>
+            <div class="ampel-row">
+              <div class="ampel-item green">
+                <div class="ampel-label">GRÜN</div>
+                <div class="ampel-desc">Vollgas. Plan wie vorgesehen.</div>
+              </div>
+              <div class="ampel-item yellow">
+                <div class="ampel-label">GELB</div>
+                <div class="ampel-desc">−2.5% Intensität. Warnsignal.</div>
+              </div>
+              <div class="ampel-item red">
+                <div class="ampel-label">ROT</div>
+                <div class="ampel-desc">Stop. Hohe Fatigue. Deload erzwingen.</div>
+              </div>
+            </div>
+            <div class="info-box">Datenbasierte Anpassung statt "Durchbeißen". Der 4-Wochen-Zyklus ist die Karte — Neuro Readiness ist das GPS, das Staus (Stress) umfährt.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end card -->
+  </div><!-- end tab-plan -->
+
+  <!-- ═══ PROGRESS ═══ -->
+  <div id="tab-progress" class="tab-content">
+    <div class="card">
+      <div class="card-title">Langfrist-Trend</div>
+      <div class="chart-sub">Verbesserung / Stagnation über die letzten Wochen</div>
+      <div class="trend-grid" id="trend-grid">
+        <div class="trend-item" id="trend-int"><div class="trend-arrow" id="ta-int">—</div><div class="trend-metric">Intensität</div><div class="trend-detail" id="td-int">Keine Daten</div></div>
+        <div class="trend-item" id="trend-weight"><div class="trend-arrow" id="ta-weight">—</div><div class="trend-metric">Gewichte</div><div class="trend-detail" id="td-weight">Keine Daten</div></div>
+        <div class="trend-item" id="trend-sleep"><div class="trend-arrow" id="ta-sleep">—</div><div class="trend-metric">Schlaf</div><div class="trend-detail" id="td-sleep">Keine Daten</div></div>
+        <div class="trend-item" id="trend-fatigue"><div class="trend-arrow" id="ta-fatigue">—</div><div class="trend-metric">Fatigue</div><div class="trend-detail" id="td-fatigue">Keine Daten</div></div>
+        <div class="trend-item" id="trend-explo"><div class="trend-arrow" id="ta-explo">—</div><div class="trend-metric">Explosivität</div><div class="trend-detail" id="td-explo">Keine Daten</div></div>
+        <div class="trend-item" id="trend-readiness"><div class="trend-arrow" id="ta-readiness">—</div><div class="trend-metric">Readiness</div><div class="trend-detail" id="td-readiness">Keine Daten</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Zyklen-Vergleich</div>
+      <div class="chart-sub">Durchschnittliche Leistung pro 4-Wochen-Zyklus</div>
+      <canvas id="chart-cycles" height="200"></canvas>
+      <div class="cycle-cards" id="cycle-cards"></div>
+      <div class="chart-empty" id="ce-cycles">Mindestens 1 vollständiger Zyklus nötig.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Trainingswochen-Matrix</div>
+      <div class="chart-sub">Trainingstage über Wochen — Status + Intensität</div>
+      <div class="day-filter">
+        <button class="filter-btn active" data-f="all" onclick="setFilter('all')">Alle</button>
+        <button class="filter-btn" data-f="1" onclick="setFilter('1')">Schwer</button>
+        <button class="filter-btn" data-f="2" onclick="setFilter('2')">Hypertrophie</button>
+        <button class="filter-btn" data-f="3" onclick="setFilter('3')">Mittel</button>
+        <button class="filter-btn" data-f="4" onclick="setFilter('4')">Metabolisch</button>
+      </div>
+      <canvas id="chart-matrix" height="260"></canvas>
+      <div class="matrix-legend">
+        <span class="ml-item"><span class="ml-dot" style="background:var(--green);"></span>Grün</span>
+        <span class="ml-item"><span class="ml-dot" style="background:var(--yellow);"></span>Gelb</span>
+        <span class="ml-item"><span class="ml-dot" style="background:var(--red);"></span>Rot</span>
+        <span class="ml-item"><span class="ml-dot" style="background:var(--bg-elevated);"></span>Kein Check-in</span>
+      </div>
+      <div class="chart-empty" id="ce-matrix">Starte Check-ins um die Matrix zu füllen.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Intensitäts-Trend</div>
+      <canvas id="chart-intensity" height="200"></canvas>
+      <div class="chart-empty" id="ce-int">Noch keine Daten.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Readiness-Verlauf</div>
+      <canvas id="chart-readiness" height="100"></canvas>
+      <div class="chart-empty" id="ce-read">—</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Gewichts-Progression — Tag 1</div>
+      <div class="chart-legend" id="lift-legend"></div>
+      <canvas id="chart-lifts" height="220"></canvas>
+      <div class="chart-empty" id="ce-lift">—</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Zusammenfassung</div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-val" id="stat-total">0</div><div class="stat-label">Check-ins</div></div>
+        <div class="stat-item"><div class="stat-val green" id="stat-green">0</div><div class="stat-label">Grün</div></div>
+        <div class="stat-item"><div class="stat-val yellow" id="stat-yellow">0</div><div class="stat-label">Gelb</div></div>
+        <div class="stat-item"><div class="stat-val red" id="stat-red">0</div><div class="stat-label">Rot</div></div>
+      </div>
+      <div class="stat-bar-wrap" id="stat-bar-wrap" style="display:none;">
+        <div class="stat-bar">
+          <div class="stat-bar-seg green" id="bar-green"></div>
+          <div class="stat-bar-seg yellow" id="bar-yellow"></div>
+          <div class="stat-bar-seg red" id="bar-red"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LOG ═══ -->
+  <div id="tab-log" class="tab-content">
+    <div class="export-row">
+      <button class="export-btn" onclick="exportReport()">📄 Report</button>
+      <button class="export-btn" onclick="exportJSON()">💾 Backup</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Training Logbuch</div>
+      <div id="log-entries">
+        <div class="log-empty"><div class="log-empty-icon">📋</div>Noch keine Einträge.<br><span style="font-size:12px;">Starte einen Check-in für deinen ersten Eintrag.</span></div>
+      </div>
+      <button class="log-clear-btn" id="log-clear" onclick="clearLog()">Log zurücksetzen</button>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<div class="footer">NeuroPendulum — System Builder · Realität über Laborbedingungen.<br>neuropendulum.com</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="switchTab('dashboard')" data-tab="dashboard"><span class="nav-icon">◉</span>Status</button>
+  <button class="nav-btn" onclick="switchTab('setup')" data-tab="setup"><span class="nav-icon">⚙</span>Setup</button>
+  <button class="nav-btn" onclick="switchTab('checkin')" data-tab="checkin"><span class="nav-icon">⚡</span>Check-in</button>
+  <button class="nav-btn" onclick="switchTab('plan')" data-tab="plan"><span class="nav-icon">📘</span>System</button>
+  <button class="nav-btn" onclick="switchTab('progress')" data-tab="progress"><span class="nav-icon">📈</span>Trend</button>
+  <button class="nav-btn" onclick="switchTab('log')" data-tab="log"><span class="nav-icon">☰</span>Log</button>
+</div>
+
+<script>
+// ═══════════════════════════
+// NEUROPENDULUM ENGINE v0.9
+// ═══════════════════════════
+
+const DB = {
+  save(k,v){try{localStorage.setItem('np_'+k,JSON.stringify(v));}catch(e){}},
+  load(k,fb){try{const d=localStorage.getItem('np_'+k);return d?JSON.parse(d):fb;}catch(e){return fb;}}
+};
+
+const defaultLifts = {
+  kb:{n:'Kniebeuge',rm:0}, kh:{n:'Kreuzheben',rm:0},
+  bd:{n:'Bankdrücken',rm:0}, mp:{n:'Military Press',rm:0}
+};
+
+const S = {
+  lifts: DB.load('lifts', defaultLifts),
+  customs: DB.load('customs', null),
+  last: DB.load('last', null),
+  log: DB.load('log', []),
+  tm: 0.85
+};
+
+// First-run defaults: Klimmzüge + LH-Rudern für Tag 1
+if(S.customs === null){
+  S.customs = [
+    {name:'Klimmzüge', rm:0, days:'1', id:10001},
+    {name:'LH-Rudern',  rm:0, days:'1', id:10002}
+  ];
+  DB.save('customs', S.customs);
+}
+
+function persist(){
+  DB.save('lifts',S.lifts); DB.save('customs',S.customs);
+  DB.save('last',S.last);   DB.save('log',S.log);
+}
+
+function hasAnyRM(){
+  return ['kb','kh','bd','mp'].some(id=>S.lifts[id].rm>0);
+}
+
+const WK = {
+  1:{name:'Einstieg',   sets:'5×3',     pct:0.80, schema:'Cluster',  intraPause:'30s',      interPause:'2–3 min', note:'Volumen & Technik — Fundament legen.'},
+  2:{name:'Intensivierung', sets:'10×2', pct:0.85, schema:'Cluster',  intraPause:'20–30s',   interPause:'2–3 min', note:'Dichte steigern — Cluster-Vorteil greift.'},
+  3:{name:'Neural Peak', sets:'7-10×1',  pct:0.90, schema:'Singles',  intraPause:'—',        interPause:'3–5 min', note:'Maximale neuronale Ansteuerung. Stop-Regel beachten!'},
+  4:{name:'Deload',      sets:'3×5',     pct:0.60, schema:'Erholung', intraPause:'—',        interPause:'1.5–2 min', note:'Strategische Erholung. Superkompensation.'}
+};
+
+const getTM  = rm => Math.round(rm * S.tm);
+const rnd    = w  => Math.round(w / 2.5) * 2.5;
+const planned= (rm,pct)=> rm>0 ? rnd(getTM(rm)*pct) : 0;
+
+function getCustomsForDay(dayNum){
+  return S.customs.filter(ex=>{
+    if(ex.days==='234' && dayNum>=2 && dayNum<=4) return true;
+    return ex.days===String(dayNum);
+  });
+}
+
+// ENGINE
+function engine(sleep,sq,fat,exp,doms,week){
+  let iA=0,vA=0,R=[];
+  if(week===4){
+    R.push({l:'Deload-Woche',v:'Erholung'});
+    if(fat>=9||sleep<4){
+      R.push({l:fat>=9?'Fatigue ≥9':'Schlaf <4h',v:'Warnung'});
+      return{iA:0,vA:0,st:'GELB — LEICHT ANPASSEN',sc:'yellow',sub:'Deload — aber Warnsignale. Extra locker.',R};
+    }
+    return{iA:0,vA:0,st:'GRÜN — VOLLGAS',sc:'green',sub:'Deload-Woche. Erholung hat Priorität.',R};
+  }
+  if(exp<=2){iA-=5;vA-=20;R.push({l:'Explosivität ≤2',v:'-5% / -20%'});}
+  else if(exp===3){iA-=2.5;R.push({l:'Explosivität =3',v:'-2.5%'});}
+  else R.push({l:'Explosivität ≥4',v:'0%'});
+  if(sleep<5){iA-=2.5;R.push({l:'Schlaf <5h',v:'-2.5%'});}
+  else R.push({l:'Schlaf ≥5h',v:'0%'});
+  if(sq<=2){iA-=1.5;R.push({l:'Schlafqualität ≤2',v:'-1.5%'});}
+  else R.push({l:'Schlafqualität ≥3',v:'0%'});
+  if(fat>=9){iA-=5;vA-=30;R.push({l:'Fatigue ≥9',v:'-5% / -30%'});}
+  else if(fat>=7){iA-=2.5;R.push({l:'Fatigue ≥7',v:'-2.5%'});}
+  else R.push({l:'Fatigue <7',v:'0%'});
+  if(doms>=4){iA-=1.5;vA-=15;R.push({l:'Soreness ≥4',v:'-1.5% / -15%'});}
+  else R.push({l:'Soreness <4',v:'0%'});
+  const stress=(exp<=2?1:0)+(fat>=7?1:0)+(sleep<5?1:0)+(sq<=2?1:0)+(doms>=4?1:0);
+  if(stress>=3){iA-=2.5;R.push({l:'Kombi-Stress ≥3',v:'-2.5%'});}
+  let st,sc,sub;
+  if(fat>=9&&sleep<5){st='ROT — SCHÜTZEN';sc='red';sub='Erholung, nicht Ego.';}
+  else if(iA<=-10){st='ROT — SCHÜTZEN';sc='red';sub='Zu viele Stressoren heute.';}
+  else if(iA>=-2.5&&vA>=-15){st='GRÜN — VOLLGAS';sc='green';sub='Trainiere wie geplant. Alles passt.';}
+  else{st='GELB — ANPASSEN';sc='yellow';sub='Reduzierte Intensität. Höre auf deinen Körper.';}
+  return{iA,vA,st,sc,sub,R};
+}
+
+// TABS
+let activeTab='dashboard';
+function switchTab(id){
+  activeTab=id;
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.querySelector(`.nav-btn[data-tab="${id}"]`).classList.add('active');
+  if(id==='plan') buildPlan();
+  if(id==='dashboard') updateDash();
+  if(id==='progress') drawCharts();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+// SEL BUTTONS (check-in)
+document.querySelectorAll('.ci-select').forEach(g=>{
+  g.querySelectorAll('.sel-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      g.querySelectorAll('.sel-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+});
+
+// CX DAY BUTTONS
+document.querySelectorAll('#cx-days .sel-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#cx-days .sel-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  });
+});
+
+function updateFatigue(v){
+  const el=document.getElementById('fat-display');
+  el.textContent=v;
+  el.className='slider-val'+(v>=9?' danger':v>=7?' warn':'');
+}
+
+function toggleFW(hdr){
+  hdr.nextElementSibling.classList.toggle('open');
+  hdr.querySelector('.fw-chevron').classList.toggle('open');
+}
+function toggleWeek(h){
+  h.nextElementSibling.classList.toggle('open');
+  h.querySelector('.week-chevron').classList.toggle('open');
+}
+
+// SETUP
+function updateTMs(){
+  ['kb','kh','bd','mp'].forEach(id=>{
+    const rm=parseFloat(document.getElementById('s-'+id).value)||0;
+    document.getElementById('tm-'+id).textContent=rm>0?Math.round(rm*S.tm):'—';
+  });
+}
+document.querySelectorAll('#tab-setup .input-field').forEach(f=>f.addEventListener('input',updateTMs));
+
+function saveSetup(){
+  ['kb','kh','bd','mp'].forEach(id=>{
+    S.lifts[id].rm=parseFloat(document.getElementById('s-'+id).value)||0;
+  });
+  updateTMs(); updateDash(); chartsDirty=true; persist();
+  const m=document.getElementById('save-msg');
+  m.textContent='✓ Gespeichert'; m.classList.add('show');
+  setTimeout(()=>m.classList.remove('show'),2500);
+}
+
+// CUSTOM EXERCISES
+function addCustom(){
+  const nameEl=document.getElementById('cx-name');
+  const rmEl=document.getElementById('cx-rm');
+  const name=nameEl.value.trim();
+  if(!name) return;
+  const rm=parseFloat(rmEl.value)||0;
+  const daysBtn=document.querySelector('#cx-days .sel-btn.active');
+  const days=daysBtn?daysBtn.dataset.v:'2';
+  S.customs.push({name,rm,days,id:Date.now()});
+  persist(); renderCustomList(); nameEl.value=''; rmEl.value='';
+  const m=document.getElementById('cx-msg');
+  m.classList.add('show'); setTimeout(()=>m.classList.remove('show'),1500);
+}
+
+function removeCustom(id){S.customs=S.customs.filter(e=>e.id!==id);persist();renderCustomList();}
+
+function renderCustomList(){
+  const list=document.getElementById('cx-list');
+  if(!S.customs.length){
+    list.innerHTML='<div class="custom-empty">Noch keine eigenen Übungen.</div>';return;
+  }
+  const dayLabels={'1':'Tag 1','2':'Tag 2','3':'Tag 3','4':'Tag 4','234':'Tag 2-4'};
+  const dayColors={'1':'color:var(--red);background:var(--red-bg);',
+    '2':'color:var(--blue);background:var(--blue-dim);',
+    '3':'color:var(--orange);background:var(--orange-glow);',
+    '4':'color:var(--green);background:var(--green-bg);',
+    '234':'color:var(--text-secondary);background:rgba(139,144,165,0.12);'};
+  list.innerHTML=S.customs.map(ex=>`
+    <div class="custom-exercise">
+      <div class="custom-exercise-info">
+        <div class="custom-exercise-name">${ex.name}
+          <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;margin-left:6px;${dayColors[ex.days]||dayColors['2']}">${dayLabels[ex.days]||ex.days}</span>
+        </div>
+        <div class="custom-exercise-detail">1RM: ${ex.rm>0?ex.rm+' kg':'Körpergew.'} · TM: ${ex.rm>0?getTM(ex.rm)+' kg':'—'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span class="custom-exercise-rm">${ex.rm>0?ex.rm:'BW'}</span>
+        <button class="custom-exercise-del" onclick="removeCustom(${ex.id})">×</button>
+      </div>
+    </div>`).join('');
+}
+
+// CHECK-IN
+function getVal(gid){
+  const a=document.querySelector('#'+gid+' .sel-btn.active');
+  return a?parseInt(a.dataset.v):3;
+}
+
+function runCheckin(){
+  if(!hasAnyRM()){
+    switchTab('setup');
+    document.querySelectorAll('#tab-setup .input-field').forEach(f=>{
+      f.style.borderColor='var(--orange)';f.style.boxShadow='0 0 0 3px var(--orange-glow)';
+      setTimeout(()=>{f.style.borderColor='';f.style.boxShadow='';},2500);
+    });
+    return;
+  }
+  const w=parseInt(document.getElementById('ci-week').value);
+  const d=parseInt(document.getElementById('ci-day').value);
+  const sl=parseFloat(document.getElementById('ci-sleep').value);
+  if(isNaN(sl)||sl<0||sl>24){
+    const inp=document.getElementById('ci-sleep');
+    inp.style.borderColor='var(--red)';inp.focus();
+    setTimeout(()=>{inp.style.borderColor='';},2000);return;
+  }
+  const sq=getVal('ci-sleepq');
+  const fat=parseInt(document.getElementById('ci-fatigue').value);
+  const exp=getVal('ci-explo');
+  const dom=getVal('ci-doms');
+  const r=engine(sl,sq,fat,exp,dom,w);
+  const pct=Math.max(0.40,Math.min(0.95,WK[w].pct+(r.iA/100)));
+  const wts={};
+  ['kb','kh','bd','mp'].forEach(id=>{if(S.lifts[id].rm>0) wts[id]=rnd(getTM(S.lifts[id].rm)*pct);});
+
+  // Result badge
+  const badge=document.getElementById('res-badge');
+  badge.textContent=r.st;
+  badge.style.cssText=`background:var(--${r.sc}-bg);border:2px solid var(--${r.sc});color:var(--${r.sc});box-shadow:0 0 30px var(--${r.sc}-glow);`;
+  document.getElementById('res-int').textContent=(pct*100).toFixed(1)+'%';
+
+  const dayTitles={1:'Tag 1 — Empfohlene Übungen',2:'Tag 2 — Hypertrophie',3:'Tag 3 — Mittel',4:'Tag 4 — Metabolisch'};
+  document.getElementById('res-lifts-title').textContent=dayTitles[d];
+
+  // Build lifts HTML
+  let html='';
+  if(d===1){
+    [{id:'kb',n:'Kniebeuge'},{id:'kh',n:'Kreuzheben'},{id:'bd',n:'Bankdrücken'},{id:'mp',n:'Military Press'}].forEach(l=>{
+      if(wts[l.id]) html+=`<div class="res-lift-row"><span class="res-lift-name">${l.n}</span><span class="res-lift-weight">${wts[l.id].toFixed(1)} kg</span></div>`;
+    });
+    getCustomsForDay(1).forEach(ex=>{
+      const w2=ex.rm>0?rnd(getTM(ex.rm)*pct):null;
+      html+=`<div class="res-lift-row"><span class="res-lift-name">${ex.name}</span><span class="res-lift-weight">${w2!==null?w2.toFixed(1)+' kg':'Körpergew.'}</span></div>`;
+    });
+    if(!html) html='<div style="padding:16px 0;text-align:center;color:var(--text-muted);font-size:13px;">Trage 1RM im Setup ein.</div>';
+  } else {
+    const exs=getCustomsForDay(d);
+    if(!exs.length){
+      html=`<div style="padding:16px 0;text-align:center;color:var(--text-muted);font-size:13px;line-height:1.8;">Noch keine Übungen für Tag ${d}.<br>Füge sie im <strong style="color:var(--orange)">Setup</strong> hinzu.</div>`;
+    } else {
+      exs.forEach(ex=>{
+        const w2=ex.rm>0?rnd(getTM(ex.rm)*pct):null;
+        html+=`<div class="res-lift-row"><span class="res-lift-name">${ex.name}</span><span class="res-lift-weight">${w2!==null?w2.toFixed(1)+' kg':'Körpergew.'}</span></div>`;
+      });
+    }
+  }
+  document.getElementById('res-lifts-container').innerHTML=html;
+
+  // Adjustments
+  let adjHTML=r.R.map(x=>`<div class="adj-row"><span>${x.l}</span><span class="${x.v.includes('-')?'adj-neg':'adj-zero'}">${x.v}</span></div>`).join('');
+  adjHTML+=`<div class="adj-total"><span>Gesamt</span><span class="adj-total-val">${r.iA}% Int / ${r.vA}% Vol</span></div>`;
+  document.getElementById('adj-box').innerHTML=adjHTML;
+
+  document.getElementById('stop-regel-box').classList.toggle('show',w===3);
+  document.getElementById('myo-alert').classList.toggle('show',r.vA<0);
+  document.getElementById('dec-msg').classList.remove('show');
+
+  const rc=document.getElementById('result-card');
+  rc.classList.remove('show'); void rc.offsetWidth; rc.classList.add('show');
+  setTimeout(()=>rc.scrollIntoView({behavior:'smooth',block:'start'}),50);
+
+  S.last={w,d,sl,sq,fat,exp,dom,st:r.st,sc:r.sc,pct,wts,iA:r.iA,vA:r.vA};
+  chartsDirty=true; updateDash(); persist();
+}
+
+function logDecision(type){
+  if(!S.last) return;
+  const now=new Date();
+  const dn={1:'Schwer',2:'Hypertrophie',3:'Mittel',4:'Metabolisch'};
+  S.log.unshift({
+    date:now.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),
+    time:now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),
+    ...S.last,dayName:dn[S.last.d],decision:type
+  });
+  chartsDirty=true; renderLog(); persist();
+  const msg=document.getElementById('dec-msg');
+  msg.textContent=type==='accept'?'✓ Akzeptiert — ins Log':'↻ Override — ins Log';
+  msg.classList.add('show');
+}
+
+// DASHBOARD — no weights shown before check-in
+function updateDash(){
+  const statusEl=document.getElementById('dash-status');
+  const setupHint=document.getElementById('setup-hint');
+  const checkinBtn=document.getElementById('checkin-action');
+
+  setupHint.style.display=hasAnyRM()?'none':'block';
+  checkinBtn.style.display=hasAnyRM()?'flex':'none';
+
+  if(!S.last){
+    statusEl.textContent='KEIN CHECK-IN';
+    statusEl.className='status-badge';
+    statusEl.style.cssText='background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted);box-shadow:none;font-size:28px;';
+    document.getElementById('dash-subtitle').textContent='Starte einen Check-in vor dem Training.';
+    document.getElementById('dash-lifts-title').textContent='Heutige Gewichte';
+    document.getElementById('dash-lift-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:16px 0;color:var(--text-muted);font-size:13px;line-height:1.8;">Noch kein Check-in.<br>Gewichte erscheinen nach dem Check-in.</div>';
+    document.getElementById('dash-int').textContent='—';
+    document.getElementById('dash-int-fill').style.width='0%';
+    return;
+  }
+  const r=S.last;
+  statusEl.textContent=r.st; statusEl.className='status-badge '+r.sc; statusEl.style.cssText='';
+  const subs={green:'Trainiere wie geplant. Alles passt.',yellow:'Reduzierte Intensität empfohlen.',red:'Deload oder Pause empfohlen.'};
+  document.getElementById('dash-subtitle').textContent=subs[r.sc]||'';
+  const dayNames={1:'Tag 1',2:'Tag 2 — Hypertrophie',3:'Tag 3 — Mittel',4:'Tag 4 — Metabolisch'};
+  document.getElementById('dash-lifts-title').textContent='Gewichte — '+dayNames[r.d];
+
+  let gridHTML='';
+  if(r.d===1){
+    [{id:'kb',n:'Kniebeuge'},{id:'kh',n:'Kreuzheben'},{id:'bd',n:'Bankdrücken'},{id:'mp',n:'Military Press'}].forEach(l=>{
+      if(r.wts&&r.wts[l.id]) gridHTML+=`<div class="lift-card"><div class="lift-name">${l.n}</div><div class="lift-weight">${r.wts[l.id].toFixed(1)}</div><div class="lift-unit">kg</div></div>`;
+    });
+    getCustomsForDay(1).forEach(ex=>{
+      const w2=ex.rm>0?rnd(getTM(ex.rm)*r.pct):null;
+      const short=ex.name.length>14?ex.name.slice(0,13)+'…':ex.name;
+      gridHTML+=`<div class="lift-card"><div class="lift-name">${short}</div><div class="lift-weight" style="font-size:${w2?'32px':'20px'}">${w2!==null?w2.toFixed(1):'BW'}</div><div class="lift-unit">${w2?'kg':''}</div></div>`;
+    });
+  } else {
+    const exs=getCustomsForDay(r.d);
+    if(!exs.length){
+      gridHTML=`<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);font-size:13px;padding:16px 0;line-height:1.8;">Keine Übungen für diesen Tag.<br>Füge sie im <strong style="color:var(--orange)">Setup</strong> hinzu.</div>`;
+    } else {
+      exs.forEach(ex=>{
+        const w2=ex.rm>0?rnd(getTM(ex.rm)*r.pct):null;
+        const short=ex.name.length>14?ex.name.slice(0,13)+'…':ex.name;
+        gridHTML+=`<div class="lift-card"><div class="lift-name">${short}</div><div class="lift-weight" style="font-size:${w2?'32px':'20px'}">${w2!==null?w2.toFixed(1):'BW'}</div><div class="lift-unit">${w2?'kg':''}</div></div>`;
+      });
+    }
+  }
+  document.getElementById('dash-lift-grid').innerHTML=gridHTML||'<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:12px;">—</div>';
+  document.getElementById('dash-int').textContent=(r.pct*100).toFixed(1)+'%';
+  const fill=document.getElementById('dash-int-fill');
+  fill.style.width=(r.pct*100)+'%';
+  fill.style.background=`var(--${r.sc})`;
+}
+
+// PLAN
+function buildPlan(){
+  const c=document.getElementById('plan-weeks'); c.innerHTML='';
+  const dayPcts={1:null,2:0.55,3:0.70,4:0.30};
+  const accSchema={1:{t2:'4×8',t3:'3×12-15'},2:{t2:'3×6',t3:'3×10-12'},3:{t2:'2×6',t3:'2×10'},4:{t2:'3×8 leicht',t3:'3×12 leicht'}};
+
+  function coreHTML(w){
+    const s=WK[w];
+    const vals=['kb','kh','bd','mp'].map(id=>S.lifts[id].rm>0?planned(S.lifts[id].rm,s.pct).toFixed(1):null).filter(Boolean);
+    return vals.length?`<div class="day-weights">${vals.join(' / ')} kg</div>`:'<div class="day-note">→ 1RM im Setup eintragen</div>';
+  }
+  function customsHTML(dayNum){
+    const pct=dayPcts[dayNum]||0.55;
+    const exs=getCustomsForDay(dayNum);
+    if(!exs.length) return '<div class="day-note">→ Deine Übungen (Setup)</div>';
+    return '<div class="day-custom-weights">'+exs.map(ex=>ex.rm>0?ex.name+': '+rnd(getTM(ex.rm)*pct).toFixed(1)+' kg':ex.name+': Körpergew.').join(' · ')+'</div>';
+  }
+
+  [1,2,3,4].forEach(w=>{
+    const s=WK[w];
+    const acc=accSchema[w];
+    const pauseInfo=s.intraPause!=='—'?`Intra: ${s.intraPause} · Inter: ${s.interPause}`:`Inter-Set: ${s.interPause}`;
+    const el=document.createElement('div'); el.className='plan-week';
+    el.innerHTML=`
+      <div class="week-hdr" onclick="toggleWeek(this)">
+        <span class="week-name">W${w} — ${s.name}</span>
+        <div class="week-meta"><span>${s.pct*100}% TM</span>
+        <span class="week-chevron${w<=2?' open':''}">▾</span></div>
+      </div>
+      <div class="week-body${w<=2?' open':''}">
+        <div class="day-block">
+          <div class="day-name">Tag 1 — ${s.schema}</div>
+          <div class="day-schema">${s.sets} @ ${s.pct*100}%</div>
+          ${coreHTML(w)}${customsHTML(1)}
+          <div class="day-note">${pauseInfo} · ${s.note}</div>
+        </div>
+        <div class="day-block">
+          <div class="day-name">Tag 2 — Hypertrophie · T2: ${acc.t2} · T3: ${acc.t3}</div>
+          ${customsHTML(2)}
+        </div>
+        <div class="day-block">
+          <div class="day-name">Tag 3 — Mittel · T2: ${acc.t2} · T3: ${acc.t3}</div>
+          ${customsHTML(3)}
+        </div>
+        <div class="day-block">
+          <div class="day-name">Tag 4 — Metabolisch · T3 Fokus</div>
+          ${customsHTML(4)}
+        </div>
+      </div>`;
+    c.appendChild(el);
+  });
+}
+
+// LOG
+function renderLog(){
+  const c=document.getElementById('log-entries');
+  const btn=document.getElementById('log-clear');
+  if(!S.log.length){c.innerHTML='<div class="log-empty"><div class="log-empty-icon">📋</div>Noch keine Einträge.</div>';btn.style.display='none';return;}
+  btn.style.display='block';
+  c.innerHTML=S.log.map(e=>`
+    <div class="log-entry">
+      <div class="log-meta">
+        <span class="log-date">${e.date} ${e.time} — W${e.w} ${e.dayName}</span>
+        <span class="log-status-tag ${e.sc}">${e.sc.toUpperCase()}</span>
+      </div>
+      <div class="log-body">
+        Schlaf ${e.sl}h · Fatigue ${e.fat}/10 · Expl. ${e.exp}/5 · ${e.decision==='accept'?'✓ Accept':'↻ Override'}<br>
+        Int: ${(e.pct*100).toFixed(1)}% · Anp: ${e.iA}% / ${e.vA}%
+        ${e.d===1&&e.wts?'<br>'+['kb','kh','bd','mp'].filter(k=>e.wts[k]).map(k=>`${k.toUpperCase()} <span class="log-highlight">${e.wts[k].toFixed(1)}</span>`).join(' · '):''}
+      </div>
+    </div>`).join('');
+}
+
+function clearLog(){if(confirm('Log zurücksetzen?')){S.log=[];chartsDirty=true;renderLog();persist();}}
+
+// EXPORT
+function exportReport(){
+  const data=[...S.log].reverse();
+  const now=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const setupRows=['kb','kh','bd','mp'].map(id=>S.lifts[id].rm>0?`<tr><td>${S.lifts[id].n}</td><td>${S.lifts[id].rm} kg</td><td>${getTM(S.lifts[id].rm)} kg</td></tr>`:'').join('');
+  const customRows=S.customs.length?S.customs.map(ex=>`<tr><td>${ex.name}</td><td>${ex.rm>0?ex.rm+' kg':'BW'}</td><td>Tag ${ex.days}</td></tr>`).join(''):'<tr><td colspan="3" style="color:#666">Keine</td></tr>';
+  const total=data.length,g=data.filter(e=>e.sc==='green').length,y=data.filter(e=>e.sc==='yellow').length,r=data.filter(e=>e.sc==='red').length;
+  const logRows=data.slice(-20).reverse().map(e=>{
+    const col=e.sc==='green'?'#22C55E':e.sc==='yellow'?'#EAB308':'#EF4444';
+    return `<tr><td>${e.date}</td><td>W${e.w}/${e.dayName}</td><td style="color:${col};font-weight:700;">${e.sc.toUpperCase()}</td><td>${(e.pct*100).toFixed(1)}%</td><td>${e.sl}h</td><td>${e.fat}/10</td><td>${e.iA}%</td></tr>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>NeuroPendulum Report — ${now}</title>
+  <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Helvetica Neue,sans-serif;background:#fff;color:#1a1a1a;padding:32px;max-width:800px;margin:0 auto;}
+  h1{font-size:28px;font-weight:700;margin-bottom:4px;}h1 span:first-child{color:#4DA3FF;}h1 span:last-child{color:#E8590C;}
+  .sub{color:#888;font-size:13px;margin-bottom:24px;font-family:monospace;}h2{font-size:16px;font-weight:600;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #E8590C;color:#E8590C;}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px;}th{background:#f5f5f5;text-align:left;padding:8px 10px;font-family:monospace;font-size:10px;text-transform:uppercase;color:#666;}td{padding:7px 10px;border-bottom:1px solid #eee;}
+  .stats{display:flex;gap:16px;margin:12px 0 24px;}.stat-box{flex:1;padding:16px;background:#f8f8f8;border-radius:8px;text-align:center;}.stat-num{font-size:32px;font-weight:700;font-family:monospace;}.stat-num.g{color:#22C55E;}.stat-num.y{color:#EAB308;}.stat-num.r{color:#EF4444;}.stat-lbl{font-size:11px;color:#888;margin-top:4px;}
+  .footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#aaa;text-align:center;font-family:monospace;}</style></head><body>
+  <h1><span>Neuro</span><span>Pendulum</span></h1><div class="sub">Report — ${now} · v0.9</div>
+  <h2>T1 Hauptübungen</h2><table><thead><tr><th>Übung</th><th>1RM</th><th>Training Max (85%)</th></tr></thead><tbody>${setupRows||'<tr><td colspan="3" style="color:#666">Noch nicht eingetragen</td></tr>'}</tbody></table>
+  <h2>Eigene Übungen</h2><table><thead><tr><th>Übung</th><th>1RM</th><th>Tag</th></tr></thead><tbody>${customRows}</tbody></table>
+  <h2>Zusammenfassung — ${total} Check-ins</h2>
+  <div class="stats"><div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Gesamt</div></div><div class="stat-box"><div class="stat-num g">${g}</div><div class="stat-lbl">Grün</div></div><div class="stat-box"><div class="stat-num y">${y}</div><div class="stat-lbl">Gelb</div></div><div class="stat-box"><div class="stat-num r">${r}</div><div class="stat-lbl">Rot</div></div></div>
+  <h2>Log (letzte 20)</h2><table><thead><tr><th>Datum</th><th>Woche/Tag</th><th>Status</th><th>Int.</th><th>Schlaf</th><th>Fatigue</th><th>Anp.</th></tr></thead><tbody>${logRows||'<tr><td colspan="7" style="color:#888">Keine Einträge</td></tr>'}</tbody></table>
+  <div class="footer">NeuroPendulum — System Builder · neuropendulum.com</div></body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();setTimeout(()=>w.print(),300);}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='NeuroPendulum-Report.html';a.click();}
+}
+
+function exportJSON(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify({version:'v0.9',exported:new Date().toISOString(),lifts:S.lifts,customs:S.customs,log:S.log},null,2)],{type:'application/json'}));
+  a.download='NeuroPendulum-Backup.json'; a.click();
+}
+
+// CHARTS
+const C={orange:'#E8590C',orangeAlpha:'rgba(232,89,12,0.15)',blue:'#4DA3FF',blueAlpha:'rgba(77,163,255,0.15)',green:'#22C55E',yellow:'#EAB308',red:'#EF4444',grid:'#1A2035',text:'#454B62',bg:'#0C1018'};
+let matrixFilter='all', chartsDirty=true;
+
+function getCtx(id){
+  const canvas=document.getElementById(id);
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const tW=Math.round(rect.width*dpr),tH=Math.round(rect.height*dpr);
+  if(canvas.width!==tW||canvas.height!==tH){canvas.width=tW;canvas.height=tH;}
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,w:rect.width,h:rect.height};
+}
+
+function setFilter(f){
+  matrixFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
+  if(S.log.length) drawMatrix([...S.log].reverse());
+}
+
+function drawCharts(){
+  if(!chartsDirty) return;
+  chartsDirty=false;
+  const data=[...S.log].reverse();
+  drawStats(data);
+  drawTrends(data);
+  if(data.length>0) drawMatrix(data);
+  document.getElementById('ce-matrix').classList.toggle('show',data.length===0);
+  if(data.length>=4) drawCycles(data);
+  document.getElementById('ce-cycles').classList.toggle('show',data.length<4);
+  const hasTwo=data.length>=2;
+  if(hasTwo){drawIntensity(data);drawReadiness(data);drawLifts(data);}
+  ['ce-int','ce-read','ce-lift'].forEach(id=>document.getElementById(id).classList.toggle('show',!hasTwo));
+}
+
+function drawStats(data){
+  const total=data.length,g=data.filter(e=>e.sc==='green').length,y=data.filter(e=>e.sc==='yellow').length,r=data.filter(e=>e.sc==='red').length;
+  ['total','green','yellow','red'].forEach(k=>document.getElementById('stat-'+k).textContent=({total,green:g,yellow:y,red:r})[k]);
+  const wrap=document.getElementById('stat-bar-wrap');
+  wrap.style.display=total?'block':'none';
+  if(total){document.getElementById('bar-green').style.width=(g/total*100)+'%';document.getElementById('bar-yellow').style.width=(y/total*100)+'%';document.getElementById('bar-red').style.width=(r/total*100)+'%';}
+}
+
+function drawTrends(data){
+  const n=data.length,half=Math.min(6,Math.floor(n/2));
+  const last=data.slice(Math.max(0,n-half));
+  const prev=data.slice(Math.max(0,n-half*2),Math.max(0,n-half));
+  const avg=(arr,fn)=>arr.length?arr.reduce((s,x)=>s+fn(x),0)/arr.length:null;
+  const trend=(cur,prv,higherBetter=true)=>{
+    if(cur==null||prv==null) return{arrow:'—',cls:'',txt:'Keine Daten'};
+    const d=cur-prv,pct=prv?d/Math.abs(prv)*100:0;
+    const up=pct>3,down=pct<-3;
+    const good=higherBetter?up:down;
+    return{arrow:up?'↗':down?'↘':'→',cls:good?'t-green':(!up&&!down)?'t-yellow':'t-red',txt:(d>0?'+':'')+d.toFixed(2)};
+  };
+  const set=(boxId,arrowId,detailId,t)=>{
+    const box=document.getElementById(boxId);
+    const ar=document.getElementById(arrowId);
+    const dt=document.getElementById(detailId);
+    if(box){box.classList.remove('t-green','t-yellow','t-red');if(t.cls)box.classList.add(t.cls);}
+    if(ar)ar.textContent=t.arrow;
+    if(dt)dt.textContent=t.txt;
+  };
+  set('trend-int','ta-int','td-int',trend(avg(last,e=>e.pct*100),avg(prev,e=>e.pct*100)));
+  set('trend-sleep','ta-sleep','td-sleep',trend(avg(last,e=>+e.sl||0),avg(prev,e=>+e.sl||0)));
+  const ft=trend(avg(prev,e=>+e.fat||0),avg(last,e=>+e.fat||0)); // invert: lower fatigue is better
+  set('trend-fatigue','ta-fatigue','td-fatigue',ft);
+  set('trend-explo','ta-explo','td-explo',trend(avg(last,e=>+e.exp||0),avg(prev,e=>+e.exp||0)));
+  const score=e=>e.sc==='green'?2:e.sc==='yellow'?1:0;
+  set('trend-readiness','ta-readiness','td-readiness',trend(avg(last,score),avg(prev,score)));
+  const wAvg=e=>{if(e.d!==1||!e.wts)return null;const ks=['kb','kh','bd','mp'].map(k=>e.wts[k]).filter(Number);return ks.length?ks.reduce((s,v)=>s+v,0)/ks.length:null;};
+  const lw=last.map(wAvg).filter(v=>v!=null),pw=prev.map(wAvg).filter(v=>v!=null);
+  set('trend-weight','ta-weight','td-weight',trend(lw.length?lw.reduce((s,v)=>s+v,0)/lw.length:null,pw.length?pw.reduce((s,v)=>s+v,0)/pw.length:null));
+}
+
+function drawIntensity(data){
+  const{ctx,w,h}=getCtx('chart-intensity');
+  const pad={t:16,r:12,b:28,l:38};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);
+  const vals=data.map(e=>e.pct*100);
+  let mn=Math.floor(Math.min(...vals)/5)*5-5,mx=Math.ceil(Math.max(...vals)/5)*5+5;
+  if(mx-mn<10) mx=mn+10;
+  const range=mx-mn;
+  const stepY=Math.ceil(range/4/5)*5;
+  ctx.strokeStyle=C.grid;ctx.lineWidth=0.5;ctx.font='10px IBM Plex Mono';ctx.fillStyle=C.text;ctx.textAlign='right';
+  for(let v=mn;v<=mx;v+=stepY){const y=pad.t+ch-((v-mn)/range)*ch;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(v.toFixed(0)+'%',pad.l-6,y+3);}
+  ctx.textAlign='center';
+  const stepX=Math.max(1,Math.floor(data.length/5));
+  data.forEach((e,i)=>{if(i%stepX===0||i===data.length-1){ctx.fillStyle=C.text;ctx.fillText(e.date.slice(0,5),pad.l+(i/(data.length-1))*cw,h-6);}});
+  const xAt=i=>pad.l+(i/Math.max(1,data.length-1))*cw;
+  const yAt=v=>pad.t+ch-((v-mn)/range)*ch;
+  ctx.beginPath();
+  data.forEach((e,i)=>{const x=xAt(i),y=yAt(vals[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo(xAt(data.length-1),pad.t+ch);ctx.lineTo(pad.l,pad.t+ch);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);grad.addColorStop(0,C.orangeAlpha);grad.addColorStop(1,'transparent');
+  ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.strokeStyle=C.orange;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+  data.forEach((e,i)=>{const x=xAt(i),y=yAt(vals[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  data.forEach((e,i)=>{const x=xAt(i),y=yAt(vals[i]);ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle=e.sc==='green'?C.green:e.sc==='yellow'?C.yellow:C.red;ctx.fill();ctx.strokeStyle=C.bg;ctx.lineWidth=2;ctx.stroke();});
+}
+
+function drawReadiness(data){
+  const{ctx,w,h}=getCtx('chart-readiness');
+  const pad={t:10,r:8,b:22,l:8};
+  const cw=w-pad.l-pad.r,bh=h-pad.t-pad.b;
+  const gap=3,bw=Math.max(8,(cw-gap*Math.max(1,data.length-1))/data.length);
+  ctx.clearRect(0,0,w,h);
+  const stepX=Math.max(1,Math.floor(data.length/6));
+  data.forEach((e,i)=>{
+    const x=pad.l+i*(bw+gap),color=e.sc==='green'?C.green:e.sc==='yellow'?C.yellow:C.red;
+    ctx.fillStyle=color;ctx.globalAlpha=0.8;ctx.fillRect(x,pad.t,bw,bh);ctx.globalAlpha=1;
+    if(i%stepX===0||i===data.length-1){ctx.fillStyle=C.text;ctx.font='9px IBM Plex Mono';ctx.textAlign='center';ctx.fillText(e.date.slice(0,5),x+bw/2,h-4);}
+  });
+}
+
+function drawLifts(data){
+  const d1=data.filter(e=>e.d===1&&e.wts&&typeof e.wts.kb==='number');
+  const emptyEl=document.getElementById('ce-lift');
+  if(d1.length<2){
+    emptyEl.classList.add('show');emptyEl.textContent=d1.length===0?'Noch keine Tag-1 Daten.':'Mind. 2 Tag-1 Check-ins nötig.';
+    document.getElementById('lift-legend').innerHTML='';
+    const{ctx,w,h}=getCtx('chart-lifts');ctx.clearRect(0,0,w,h);return;
+  }
+  emptyEl.classList.remove('show');
+  const{ctx,w,h}=getCtx('chart-lifts');
+  const pad={t:16,r:12,b:28,l:38};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  ctx.clearRect(0,0,w,h);
+  const liftKeys=['kb','kh','bd','mp'];
+  const liftColors={kb:C.orange,kh:C.blue,bd:C.green,mp:'#A78BFA'};
+  const liftNames={kb:'KB',kh:'KH',bd:'BD',mp:'MP'};
+  const legend=document.getElementById('lift-legend');
+  legend.innerHTML=liftKeys.map(k=>`<span class="legend-item"><span class="legend-dot" style="background:${liftColors[k]};"></span>${liftNames[k]}</span>`).join('');
+  const allVals=[];d1.forEach(e=>liftKeys.forEach(k=>{if(typeof e.wts[k]==='number')allVals.push(e.wts[k]);}));
+  let mn=Math.floor(Math.min(...allVals)/5)*5-5,mx=Math.ceil(Math.max(...allVals)/5)*5+5;
+  if(mx-mn<10) mx=mn+10;
+  const range=mx-mn,stepY=Math.ceil(range/4/5)*5;
+  ctx.strokeStyle=C.grid;ctx.lineWidth=0.5;ctx.font='10px IBM Plex Mono';ctx.fillStyle=C.text;ctx.textAlign='right';
+  for(let v=mn;v<=mx;v+=stepY){const y=pad.t+ch-((v-mn)/range)*ch;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(v.toFixed(0),pad.l-6,y+3);}
+  const stepX=Math.max(1,Math.floor(d1.length/5));
+  ctx.textAlign='center';
+  d1.forEach((e,i)=>{if(i%stepX===0||i===d1.length-1){ctx.fillStyle=C.text;ctx.fillText(e.date.slice(0,5),pad.l+(i/Math.max(1,d1.length-1))*cw,h-6);}});
+  const xAt=i=>pad.l+(i/Math.max(1,d1.length-1))*cw;
+  const yAt=v=>pad.t+ch-((v-mn)/range)*ch;
+  liftKeys.forEach(k=>{
+    const pts=d1.map((e,i)=>({x:xAt(i),y:yAt(e.wts[k]),v:e.wts[k]})).filter(p=>typeof p.v==='number');
+    if(pts.length<1) return;
+    ctx.beginPath();ctx.strokeStyle=liftColors[k];ctx.lineWidth=2.2;ctx.lineJoin='round';ctx.lineCap='round';
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fillStyle=liftColors[k];ctx.fill();ctx.strokeStyle=C.bg;ctx.lineWidth=2;ctx.stroke();});
+  });
+}
+
+function drawMatrix(data){
+  const filtered=matrixFilter==='all'?data:data.filter(e=>String(e.d)===String(matrixFilter));
+  const{ctx,w,h}=getCtx('chart-matrix');
+  ctx.clearRect(0,0,w,h);
+  if(!filtered.length) return;
+  // Group into week-blocks, show last 12
+  const slice=filtered.slice(Math.max(0,filtered.length-12));
+  const pad={t:20,r:8,b:8,l:40};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const cols=matrixFilter==='all'?4:1;
+  const rows=slice.length;
+  const cellW=cw/cols,cellH=Math.min(32,ch/Math.max(1,rows));
+  const dayLbl={1:'D1',2:'D2',3:'D3',4:'D4'};
+  ctx.font='9px IBM Plex Mono';ctx.fillStyle=C.text;ctx.textAlign='center';
+  if(cols===4){for(let c=0;c<4;c++) ctx.fillText(dayLbl[c+1],pad.l+c*cellW+cellW/2,pad.t-4);}
+  else ctx.fillText('Tag '+matrixFilter,pad.l+cellW/2,pad.t-4);
+  slice.forEach((e,ri)=>{
+    const y=pad.t+ri*cellH;
+    ctx.fillStyle=C.text;ctx.textAlign='right';ctx.font='9px IBM Plex Mono';
+    ctx.fillText(e.date.slice(0,5),pad.l-4,y+cellH/2+3);
+    const paint=(colIdx)=>{
+      const x=pad.l+colIdx*cellW;
+      const color=e.sc==='green'?C.green:e.sc==='yellow'?C.yellow:C.red;
+      ctx.globalAlpha=0.2;ctx.fillStyle=color;ctx.fillRect(x+2,y+2,cellW-4,cellH-4);ctx.globalAlpha=1;
+      ctx.strokeStyle=color+'55';ctx.lineWidth=1;ctx.strokeRect(x+2,y+2,cellW-4,cellH-4);
+      ctx.fillStyle=color;ctx.textAlign='center';ctx.font='bold 11px IBM Plex Mono';
+      ctx.fillText((e.pct*100).toFixed(0)+'%',x+cellW/2,y+cellH/2+4);
+    };
+    if(cols===4){
+      for(let c=0;c<4;c++){ctx.strokeStyle=C.grid;ctx.lineWidth=0.5;ctx.strokeRect(pad.l+c*cellW+2,y+2,cellW-4,cellH-4);}
+      paint(e.d-1);
+    } else paint(0);
+  });
+}
+
+function drawCycles(data){
+  const cycles=[];let cur=[];
+  data.forEach(e=>{cur.push(e);if(e.w===4){cycles.push(cur);cur=[];}});
+  if(cur.length>=4) cycles.push(cur);
+  const{ctx,w,h}=getCtx('chart-cycles');ctx.clearRect(0,0,w,h);
+  const cards=document.getElementById('cycle-cards');if(cards) cards.innerHTML='';
+  if(!cycles.length) return;
+  const score=e=>e.sc==='green'?2:e.sc==='yellow'?1:0;
+  const vals=cycles.map((cy,i)=>({i,avgInt:cy.reduce((s,e)=>s+e.pct,0)/cy.length*100,avgR:cy.reduce((s,e)=>s+score(e),0)/cy.length,n:cy.length}));
+  const pad={t:14,r:10,b:24,l:28};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const allInts=vals.map(v=>v.avgInt);
+  const mn=Math.min(...allInts)-2,mx=Math.max(...allInts)+2,range=Math.max(6,mx-mn);
+  const bw=cw/vals.length;
+  ctx.font='10px IBM Plex Mono';ctx.textAlign='center';
+  vals.forEach(v=>{
+    const x=pad.l+v.i*bw+bw/2,barH=((v.avgInt-mn)/range)*ch;
+    ctx.globalAlpha=0.18;ctx.fillStyle=C.orange;ctx.fillRect(x-bw*0.22,pad.t+ch-barH,bw*0.44,barH);ctx.globalAlpha=1;
+    ctx.fillStyle=C.orange;ctx.fillText(v.avgInt.toFixed(1)+'%',x,pad.t+ch-barH-6);
+    ctx.fillStyle=C.text;ctx.fillText('Z'+(v.i+1),x,h-6);
+  });
+  if(cards) cards.innerHTML=vals.map((v,idx)=>{
+    const diff=idx>0?v.avgInt-vals[idx-1].avgInt:0;
+    const tc=idx===0?'flat':diff>1.5?'up':diff<-1.5?'down':'flat';
+    return `<div class="cycle-card${v.i===vals.length-1?' current':''}"><div class="cc-title">Zyklus ${v.i+1}</div><div class="cc-row"><span class="cc-label">Sessions</span><span class="cc-val">${v.n}</span></div><div class="cc-row"><span class="cc-label">Ø Int.</span><span class="cc-val">${v.avgInt.toFixed(1)}%</span></div><div class="cc-row"><span class="cc-label">Grün-Rate</span><span class="cc-val">${(v.avgR/2*100).toFixed(0)}%</span></div>${idx>0?`<div class="cc-trend ${tc}">${tc==='up'?'↑':tc==='down'?'↓':'→'} ${(diff>=0?'+':'')+diff.toFixed(1)}%</div>`:''}</div>`;
+  }).join('');
+}
+
+// RESIZE
+if(typeof ResizeObserver!=='undefined'){
+  new ResizeObserver(()=>{chartsDirty=true;if(activeTab==='progress')drawCharts();}).observe(document.body);
+}
+
+// OFFLINE
+function updateOnlineStatus(){document.getElementById('offline-badge').classList.toggle('show',!navigator.onLine);}
+window.addEventListener('online',updateOnlineStatus);
+window.addEventListener('offline',updateOnlineStatus);
+updateOnlineStatus();
+
+// PWA
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  const sw=`const C='np-v09';const A=[self.location.href];self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'/'}).catch(()=>{});
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;showInstall();});
+function showInstall(){
+  const hint=document.createElement('div');
+  hint.id='install-hint';
+  hint.style.cssText='position:fixed;bottom:80px;left:16px;right:16px;z-index:200;background:#131923;border:1px solid #E8590C;border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:cardIn 0.35s ease both;';
+  hint.innerHTML=`<div style="font-size:13px;color:#EDEEF2;line-height:1.4;"><strong style="color:#E8590C;">App installieren?</strong><br><span style="font-size:11px;color:#8B90A5;">NeuroPendulum auf deinem Homescreen.</span></div><div style="display:flex;gap:8px;"><button onclick="dismissInstall()" style="padding:8px 12px;background:none;border:1px solid #1A2035;border-radius:6px;color:#454B62;font-size:11px;cursor:pointer;">Nein</button><button onclick="installApp()" style="padding:8px 14px;background:#E8590C;border:none;border-radius:6px;color:white;font-size:11px;font-weight:600;cursor:pointer;">Installieren</button></div>`;
+  document.body.appendChild(hint);
+}
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});}dismissInstall();}
+function dismissInstall(){const h=document.getElementById('install-hint');if(h)h.remove();}
+
+// INIT
+['kb','kh','bd','mp'].forEach(id=>{const v=S.lifts[id].rm;document.getElementById('s-'+id).value=v>0?v:'';});
+updateTMs(); updateDash(); renderLog(); renderCustomList();
+</script>
+</body>
+</html>
